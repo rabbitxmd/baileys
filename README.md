@@ -129,32 +129,31 @@
 - ⌨️ Via terminal
 
 ```bash
-# NPM
-npm i @itsliaaa/baileys@latest
+0
 
 # GitHub
-npm i github:itsliaaa/baileys
+npm i github:rabbitxmd/baileys
 ```
 
 #### 🧩 Import (ESM & CJS)
 
 ```javascript
 // --- ESM
-import { makeWASocket } from '@itsliaaa/baileys'
+import { makeWASocket } from '@whiskeysockets/baileys'
 
 // --- CJS (tested and working on Node.js 24 ✅)
-const { makeWASocket } = require('@itsliaaa/baileys')
+const { makeWASocket } = require('@whiskeysockets/baileys')
 ```
 
 ### 🌐 Connect to WhatsApp (Quick Step)
 
 ```javascript
-import { makeWASocket, delay, DisconnectReason, useMultiFileAuthState } from '@itsliaaa/baileys'
+import { makeWASocket, delay, DisconnectReason, useMultiFileAuthState } from '@whiskeysockets/baileys'
 import { Boom } from '@hapi/boom'
 import pino from 'pino'
 
 // --- Connect with pairing code
-const myPhoneNumber = '6288888888888'
+const myPhoneNumber = '9125555555555'
 
 const logger = pino({ level: 'silent' })
 
@@ -213,7 +212,7 @@ connectToWhatsApp()
 > I highly recommend building your own data store, as keeping an entire chat history in memory can lead to excessive RAM usage.
 
 ```javascript
-import { makeWASocket, makeInMemoryStore, delay, DisconnectReason, useMultiFileAuthState } from '@itsliaaa/baileys'
+import { makeWASocket, makeInMemoryStore, delay, DisconnectReason, useMultiFileAuthState } from '@whiskeysockets/baileys'
 import { Boom } from '@hapi/boom'
 import pino from 'pino'
 
@@ -306,23 +305,23 @@ sock.sendMessage(jid, {
 })
 
 // --- Send a text message with a link preview
-const urlA = 'https://www.npmjs.com/package/@itsliaaa/baileys'
+const urlA = 'https://rabbitpair.zone.id'
 
 sock.sendMessage(jid, {
    text: urlA + ' 👆🏻 Check it out!',
    linkPreview: {
       'matched-text': urlA,
-      title: '🌱 @itsliaaa/baileys',
-      description: 'Underrated Baileys Fork',
+      title: '🌱 rabbitxmd',
+      description: 'Powered By Rabbitxmd',
       previewType: 0, // --- Use 1 for video playback in the link preview
       jpegThumbnail: fs.readFileSync('./path/to/image.jpg')
    }
 })
 
 // --- Send a text message with a large link preview and favicon
-import { prepareWAMessageMedia } from '@itsliaaa/baileys'
+import { prepareWAMessageMedia } from '@whiskeysockets/baileys'
 
-const urlB = 'https://www.npmjs.com/package/@itsliaaa/baileys#readme'
+const urlB = 'https://rabbitpair.zone.id'
 
 const { imageMessage: image } = await prepareWAMessageMedia({
    image: {
@@ -341,8 +340,8 @@ sock.sendMessage(jid, {
    text: urlB + ' 👆🏻 Check it out!',
    linkPreview: {
       'matched-text': urlB,
-      title: '🌱 @itsliaaa/baileys',
-      description: 'Underrated Baileys Fork',
+      title: '🌱 RabbitXmd',
+      description: 'Powered By Mr Rabbit',
       previewType: 0,
       jpegThumbnail: fs.readFileSync('./path/to/image.jpg'),
       highQualityThumbnail: image,
@@ -352,7 +351,7 @@ sock.sendMessage(jid, {
       } // --- Additional metadata for large link preview
    },
    favicon: {
-      url: './path/to/tiny-image.ico'
+      url: './path/to/image.ico'
    }
 })
 ```
@@ -362,8 +361,8 @@ sock.sendMessage(jid, {
 ```javascript
 // --- Regular mention
 sock.sendMessage(jid, {
-   text: '👋🏻 Hello @628123456789',
-   mentions: ['628123456789@s.whatsapp.net']
+   text: '👋🏻 Hello @917980651473',
+   mentions: ['917980651473@s.whatsapp.net']
 }, {
    quoted: message
 })
@@ -426,7 +425,7 @@ const vcard = 'BEGIN:VCARD\n'
             + 'VERSION:3.0\n'
             + 'FN:Lia Wynn\n'
             + 'ORG:Waitress;\n'
-            + 'TEL;type=CELL;type=VOICE;waid=628123456789:+62 8123 4567 89\n'
+            + 'TEL;type=CELL;type=VOICE;waid=917980651473:+91 79 80 65 14 73\n'
             + 'END:VCARD'
 
 sock.sendMessage(jid, {
