@@ -1,7 +1,7 @@
 > [!NOTE]
 > 📄 This project is maintained with limited scope and is not intended to replace upstream Baileys.
 >
-> 😞 And, really sorry for my bad english.
+> 
 
 ### 📋 Table of Contents
 - [📋 Table of Contents](#-table-of-contents)
