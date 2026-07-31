@@ -1258,7 +1258,7 @@ sock.sendMessage(jid, {
       url: 'https://github.com/rabbitxmd/baileys'
    }, {
       text: '📞 Call',
-      call: '628123456789'
+      call: '917985214536'
    }]
 }, {
    quoted: message
