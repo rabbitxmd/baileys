@@ -64,9 +64,15 @@
   - [🔌 Attach \& Place a Call](#-attach--place-a-call)
   - [🎧 Sending Real Audio Instead of Silence](#-sending-real-audio-instead-of-silence)
   - [📴 Cleaning Up](#-cleaning-up)
+- [🛡️ Built-in AntiBot (Bot \& Link Detection)](#️-built-in-antibot-bot--link-detection)
+  - [⚙️ Native Group Enforcement (kick / warn / delete)](#️-native-group-enforcement-kick--warn--delete)
 - [👤 Profile \& Privacy Management](#-profile--privacy-management)
 - [🚫 Blocklist](#-blocklist)
 - [🔍 Checking Numbers on WhatsApp](#-checking-numbers-on-whatsapp)
+- [💬 Chat Modifications](#-chat-modifications)
+- [🏷️ Labels \& Quick Replies](#️-labels--quick-replies)
+- [📇 Contact Management](#-contact-management)
+- [🏪 Business Tools (Catalog \& Storefront)](#-business-tools-catalog--storefront)
 - [📡 Quick Reference — All Events](#-quick-reference--all-events)
 
 ### 🛠️ Internal Adjustments
@@ -1682,6 +1688,55 @@ voip.disconnect()
 
 ---
 
+# 🛡️ Built-in AntiBot (Bot & Link Detection)
+
+This fork detects two message flags natively — `message.isBotMessage` and `message.isLinkMessage` — and fires dedicated events for them as soon as they're set (unlike `messages.upsert`, which fires *before* the flags exist).
+
+```javascript
+sock.ev.on('messages.bot-detect', updates => {
+   for (const { key, message } of updates) {
+      console.log('🤖 Bot message detected:', key.id)
+   }
+})
+
+sock.ev.on('messages.link-detect', updates => {
+   for (const { key, message } of updates) {
+      console.log('🔗 Link message detected:', key.id)
+   }
+})
+```
+
+> [!NOTE]
+> `isBotMessage` is set when the sender JID is a known WhatsApp bot / Meta AI, or when the message ID looks script-generated. `isLinkMessage` is set when the text contains a `http(s)://` or `www.` link. These flags are set for **every** message, from anyone — including your own.
+
+### ⚙️ Native Group Enforcement (kick / warn / delete)
+
+On top of the raw events, the socket ships a ready-to-use moderation layer for groups — enable it per-group and it handles detection + action for you.
+
+```javascript
+// --- Turn it on for a group (mode: 'kick' | 'warn' | 'delete' | 'null')
+sock.setAntiBotSettings(groupJid, { enabled: true, mode: 'warn' })
+
+// --- Check current settings
+const settings = sock.getAntiBotSettings(groupJid)
+console.log(settings) // { enabled: true, mode: 'warn' }
+
+// --- Turn it off
+sock.setAntiBotSettings(groupJid, { enabled: false })
+```
+
+| Mode | Behaviour |
+|---|---|
+| `kick` (default) | Deletes the offending message and removes the sender |
+| `warn` | Deletes the message, warns the sender; removes them after 3 warnings |
+| `delete` | Deletes the message only |
+| `null` | Detection only — no message deletion or action taken |
+
+> [!IMPORTANT]
+> The bot itself must be a group admin for delete/kick actions to work, and it never takes action against group admins, the group owner, or its own messages.
+
+---
+
 # 👤 Profile & Privacy Management
 
 ```javascript
@@ -1690,6 +1745,11 @@ await sock.updateProfileName('🐇 RabbitXmd')
 await sock.updateProfileStatus('✨ Powered by Baileys')
 await sock.updateProfilePicture(sock.user.id, { url: './path/to/avatar.jpg' })
 await sock.removeProfilePicture(sock.user.id)
+
+// --- Update the FULL, uncropped profile picture (works for your own DP,
+// a group's DP, or — if permitted — someone else's DP)
+await sock.updateFullProfilePicture(sock.user.id, { url: './path/to/avatar-full.jpg' })
+await sock.updateFullGroupProfilePicture(groupJid, { url: './path/to/group-full.jpg' })
 
 // --- Get someone's profile picture URL
 const ppUrl = await sock.profilePictureUrl(jid, 'image')
@@ -1745,6 +1805,127 @@ if (result?.exists) {
 
 ---
 
+# 💬 Chat Modifications
+
+All of these go through a single low-level helper, `chatModify(mod, jid)` — the functions below are convenient wrappers around it, but you can also call `chatModify` directly for anything not covered by a wrapper (e.g. `mute`, `pin`, `clear`, `delete`, `markRead`, `deleteForMe`).
+
+```javascript
+// --- Mute / unmute a chat
+await sock.chatModify({ mute: 8 * 60 * 60 * 1000 }, jid) // mute for 8 hours
+await sock.chatModify({ mute: null }, jid)                // unmute
+
+// --- Archive / unarchive
+await sock.chatModify({ archive: true, lastMessages: [msg] }, jid)
+await sock.chatModify({ archive: false, lastMessages: [msg] }, jid)
+
+// --- Pin / unpin a chat
+await sock.chatModify({ pin: true }, jid)
+await sock.chatModify({ pin: false }, jid)
+
+// --- Mark a chat as read / unread
+await sock.chatModify({ markRead: true, lastMessages: [msg] }, jid)
+await sock.chatModify({ markRead: false, lastMessages: [msg] }, jid)
+
+// --- Clear all messages in a chat
+await sock.chatModify({ clear: true, lastMessages: [msg] }, jid)
+
+// --- Delete an entire chat
+await sock.chatModify({ delete: true, lastMessages: [msg] }, jid)
+
+// --- Star / unstar messages
+await sock.star(jid, [{ id: msg.key.id, fromMe: msg.key.fromMe }], true)
+
+// --- Globally disable link-preview generation (privacy setting, not the linkPreview send option)
+await sock.updateDisableLinkPreviewsPrivacy(true)
+```
+
+---
+
+# 🏷️ Labels & Quick Replies
+
+> [!NOTE]
+> Labels and Quick Replies are WhatsApp **Business** app features.
+
+```javascript
+// --- Create/update a label definition
+await sock.addLabel(jid, { name: '🔥 VIP', color: 1, deleted: false })
+
+// --- Apply / remove a label on a chat
+await sock.addChatLabel(jid, labelId)
+await sock.removeChatLabel(jid, labelId)
+
+// --- Apply / remove a label on a specific message
+await sock.addMessageLabel(jid, messageId, labelId)
+await sock.removeMessageLabel(jid, messageId, labelId)
+
+// --- Quick replies (canned responses)
+await sock.addOrEditQuickReply({
+   shortcut: '/hello',
+   message: '👋 Hello! How can I help you today?',
+   keywords: [],
+   count: 0
+})
+
+await sock.removeQuickReply(quickReplyTimestamp)
+
+sock.ev.on('labels.edit', label => console.log('🏷️ Label edited:', label))
+sock.ev.on('labels.association', assoc => console.log('🔗 Label applied:', assoc))
+```
+
+---
+
+# 📇 Contact Management
+
+```javascript
+// --- Add or edit a contact
+await sock.addOrEditContact(jid, { fullName: 'RabbitXmd', firstName: 'Rabbit' })
+
+// --- Remove a contact
+await sock.removeContact(jid)
+
+sock.ev.on('contacts.upsert', contacts => console.log('📇 New contacts:', contacts))
+sock.ev.on('contacts.update', updates => console.log('📇 Contacts updated:', updates))
+```
+
+---
+
+# 🏪 Business Tools (Catalog & Storefront)
+
+> [!NOTE]
+> These endpoints only work on WhatsApp **Business** accounts.
+
+```javascript
+// --- Get another account's business profile
+const profile = await sock.getBusinessProfile(jid)
+
+// --- Update your own business profile / cover photo
+await sock.updateBusinessProfile({ description: '🐇 Official RabbitXmd Store' })
+await sock.updateCoverPhoto({ url: './path/to/cover.jpg' })
+await sock.removeCoverPhoto(coverPhotoId)
+
+// --- Browse a catalog
+const { products, nextPageCursor } = await sock.getCatalog({ jid, limit: 20 })
+const { collections } = await sock.getCollections(jid)
+
+// --- Manage your own products
+const created = await sock.productCreate({
+   name: '📦 RabbitXmd Hoodie',
+   images: [{ url: './path/to/product.jpg' }],
+   price: 250000, // in the smallest currency unit
+   currency: 'IDR',
+   isHidden: false,
+   retailerId: 'SKU-001'
+})
+
+await sock.productUpdate(created.id, { name: '📦 Updated Name' })
+await sock.productDelete([created.id])
+
+// --- Order details
+const order = await sock.getOrderDetails(orderId, tokenBase64)
+```
+
+---
+
 # 📡 Quick Reference — All Events
 
 | Event | Fired When |
@@ -1755,12 +1936,17 @@ if (result?.exists) {
 | `messages.update` | A message is edited, revoked, or its status changes |
 | `messages.delete` | A message is deleted |
 | `messages.reaction` | Someone reacts to a message |
+| `messages.bot-detect` | A message is flagged as sent by a bot / Meta AI |
+| `messages.link-detect` | A message is flagged as containing a link |
 | `message-receipt.update` | Delivery / read receipts update |
+| `message-capping.update` | WhatsApp's new-chat message-limit info changes |
 | `chats.upsert` / `chats.update` / `chats.delete` | Chats are added, changed, or removed |
+| `chats.lock` | A chat is locked/unlocked (chat lock feature) |
 | `contacts.upsert` / `contacts.update` | Contacts are added or changed |
 | `groups.upsert` / `groups.update` | Group metadata is added or changed |
 | `group-participants.update` | Members are added, removed, promoted, or demoted |
 | `group.join-request` | Someone requests to join a group (approval mode) |
+| `group.member-tag.update` | A member's tag/label inside a group changes |
 | `newsletter-participants.update` | Newsletter admin/subscriber changes |
 | `newsletter-settings.update` | Newsletter settings change |
 | `newsletter.reaction` / `newsletter.view` | Reactions/views on a newsletter post |
@@ -1768,7 +1954,9 @@ if (result?.exists) {
 | `presence.update` | Someone's online/typing status changes |
 | `blocklist.update` | Your blocklist changes |
 | `labels.edit` / `labels.association` | Labels are created or applied to a chat |
+| `lid-mapping.update` | A phone-number ↔ LID mapping is learned/updated |
 | `messaging-history.set` | Initial history sync completes |
+| `messaging-history.status` | Progress updates during history sync |
 
 ```javascript
 sock.ev.on('messages.reaction', reactions => {
