@@ -1,21 +1,73 @@
+# 🐇 RabbitXmd Baileys
+
 > [!NOTE]
 > 📄 This project is maintained with limited scope and is not intended to replace upstream Baileys.
->
-> 
 
 ### 📋 Table of Contents
-- [📋 Table of Contents](#-table-of-contents)
-- [✨ Highlights](#-highlights)
-- [🛠️ Internal Adjustments](#%EF%B8%8F-internal-adjustments)
-- [📨 Messages Handling & Compatibility](#-highlights)
+- [🛠️ Internal Adjustments](#️-internal-adjustments)
+- [📨 Messages Handling \& Compatibility](#-messages-handling--compatibility)
 - [🧩 Additional Message Options](#-additional-message-options)
 - [📥 Installation](#-installation)
-   - [🧩 Import (ESM & CJS)](#-import-esm--cjs)
+  - [🧩 Import (ESM \& CJS)](#-import-esm--cjs)
 - [🌐 Connect to WhatsApp (Quick Step)](#-connect-to-whatsapp-quick-step)
-   - [🔐 Auth State](#-auth-state)
-- [🗄️ Implementing Data Store](#%EF%B8%8F-implementing-data-store)
+  - [🔐 Auth State](#-auth-state)
+- [🗄️ Implementing Data Store](#️-implementing-data-store)
 - [🪪 WhatsApp IDs Explain](#-whatsapp-ids-explain)
-- [✉️ Sending Messages](#%EF%B8%8F-sending-messages)
+- [✉️ Sending Messages](#️-sending-messages)
+  - [🔠 Text](#-text)
+  - [😁 Reaction](#-reaction)
+  - [📌 Pin Message](#-pin-message)
+  - [🔖 Keep Chat](#-keep-chat)
+  - [➡️ Forward Message](#️-forward-message)
+  - [👤 Contact](#-contact)
+  - [📍 Location](#-location)
+  - [🗓️ Event](#️-event)
+  - [👥 Group Invite](#-group-invite)
+  - [🛍️ Product](#️-product)
+  - [📊 Poll](#-poll)
+  - [💭 Button Response](#-button-response)
+  - [✨ Rich Response](#-rich-response)
+  - [🧾 Message with Code Block](#-message-with-code-block)
+  - [🌏 Message with Inline Entities](#-message-with-inline-entities)
+  - [📋 Message with Table](#-message-with-table)
+  - [🎞️ Status Mention](#️-status-mention)
+- [📁 Sending Media Messages](#-sending-media-messages)
+  - [🖼️ Image](#️-image)
+  - [🎥 Video](#-video)
+  - [📃 Sticker](#-sticker)
+  - [💽 Audio](#-audio)
+  - [🗂️ Document](#️-document)
+  - [🖼️ Album (Image \& Video)](#️-album-image--video)
+  - [📦 Sticker Pack](#-sticker-pack)
+- [👉🏻 Sending Interactive Messages](#-sending-interactive-messages)
+  - [🔘 Buttons](#-buttons)
+  - [📋 List](#-list)
+  - [🗄️ Interactive](#️-interactive)
+  - [🗂️ Carousel \& Native Flow](#️-carousel--native-flow)
+  - [🔈 Native Flow with Audio Footer](#-native-flow-with-audio-footer)
+  - [🫙 Hydrated Template](#-hydrated-template)
+- [💳 Sending Payment Messages](#-sending-payment-messages)
+- [📨 Handling Incoming Messages](#-handling-incoming-messages)
+- [👥 Group Management](#-group-management)
+  - [🧱 Create \& Fetch](#-create--fetch)
+  - [✏️ Update Subject / Description](#️-update-subject--description)
+  - [👤 Manage Participants](#-manage-participants)
+  - [🔗 Invite Links](#-invite-links)
+  - [⚙️ Group Settings](#️-group-settings)
+  - [🚪 Leave a Group](#-leave-a-group)
+  - [📡 Listening to Group Events](#-listening-to-group-events)
+- [🏘️ Community Management](#️-community-management)
+- [📰 Newsletter (Channel) Management](#-newsletter-channel-management)
+  - [📡 Listening to Newsletter Events](#-listening-to-newsletter-events)
+- [📞 Detecting \& Rejecting Incoming Calls](#-detecting--rejecting-incoming-calls)
+- [📟 Placing Voice Calls (VoIP)](#-placing-voice-calls-voip)
+  - [🔌 Attach \& Place a Call](#-attach--place-a-call)
+  - [🎧 Sending Real Audio Instead of Silence](#-sending-real-audio-instead-of-silence)
+  - [📴 Cleaning Up](#-cleaning-up)
+- [👤 Profile \& Privacy Management](#-profile--privacy-management)
+- [🚫 Blocklist](#-blocklist)
+- [🔍 Checking Numbers on WhatsApp](#-checking-numbers-on-whatsapp)
+- [📡 Quick Reference — All Events](#-quick-reference--all-events)
 
 ### 🛠️ Internal Adjustments
 
@@ -74,7 +126,9 @@
 
 ```bash
 npm i github:rabbitxmd/baileys
-```#### 🧩 Import (ESM & CJS)
+```
+
+#### 🧩 Import (ESM & CJS)
 
 ```javascript
 // --- ESM
@@ -820,17 +874,6 @@ sock.sendMessage([jidA, jidB, jidC], {
 # 📁 Sending Media Messages
 
 > [!NOTE]
-> For media messages, you can pass a `Buffer` directly, or an object with either:
-
-- `{ stream: Readable }`
-- `{ url: string }`
-
-The URL can be either:
-- Local file path
-- HTTP / HTTPS URL
-## 📁 Sending Media Messages
-
-> [!NOTE]
 > For media messages, you can pass:
 >
 > - `Buffer`
@@ -988,7 +1031,6 @@ The following sections cover interactive message types supported by RabbitXmd:
 - 📋 Lists
 - 🗄️ Interactive (Native Flow)
 - 🫙 Hydrated Template
-## 👉🏻 Sending Interactive Messages
 
 ### 🔘 Buttons
 
@@ -1088,7 +1130,6 @@ The next section covers Native Flow interactive messages, including:
 - Carousel + Native Flow
 - Audio Footer
 - Interactive as Template
-#### 🗄️ Interactive
 
 ##### Native Flow
 
@@ -1275,3 +1316,466 @@ The following payment message types are supported:
 - 🧾 Invoice
 - 🛍️ Order
 - 💳 Request Payment
+
+> [!NOTE]
+> Usage examples for this section are still being written and will be added soon.
+
+---
+
+# 📨 Handling Incoming Messages
+
+Every incoming or outgoing message passes through the `messages.upsert` event.
+
+```javascript
+sock.ev.on('messages.upsert', async ({ messages, type }) => {
+   // type: 'notify' -> new realtime message | 'append' -> history/offline sync
+   for (const msg of messages) {
+      if (!msg.message) continue // skip protocol / reaction-only updates
+
+      const jid = msg.key.remoteJid
+      const isGroup = jid?.endsWith('@g.us')
+      const sender = msg.key.participant || jid
+      const isFromMe = msg.key.fromMe
+
+      const text =
+         msg.message.conversation ||
+         msg.message.extendedTextMessage?.text ||
+         msg.message.imageMessage?.caption ||
+         msg.message.videoMessage?.caption ||
+         ''
+
+      console.log(`📩 [${type}] ${isGroup ? '👥' : '👤'} ${sender}: ${text}`)
+
+      if (!isFromMe && text === '!ping') {
+         await sock.sendMessage(jid, { text: '🏓 Pong!' }, { quoted: msg })
+      }
+   }
+})
+```
+
+> [!NOTE]
+> `type` is `'notify'` for a freshly received message and `'append'` for messages that arrive as part of history sync or while you were offline.
+
+---
+
+# 👥 Group Management
+
+### 🧱 Create & Fetch
+
+```javascript
+// --- Create a group
+const group = await sock.groupCreate('🚀 My Awesome Group', [
+   '917980651473@s.whatsapp.net',
+   '918888888888@s.whatsapp.net'
+])
+console.log('✅ Group created:', group.id)
+
+// --- Get group metadata
+const metadata = await sock.groupMetadata(groupJid)
+
+// --- Fetch every group you're currently in
+const allGroups = await sock.groupFetchAllParticipating()
+```
+
+### ✏️ Update Subject / Description
+
+```javascript
+await sock.groupUpdateSubject(groupJid, '🎉 New Group Name')
+await sock.groupUpdateDescription(groupJid, 'Welcome to the group!')
+```
+
+### 👤 Manage Participants
+
+```javascript
+const users = ['917980651473@s.whatsapp.net']
+
+await sock.groupParticipantsUpdate(groupJid, users, 'add')      // add members
+await sock.groupParticipantsUpdate(groupJid, users, 'remove')   // remove members
+await sock.groupParticipantsUpdate(groupJid, users, 'promote')  // make admin
+await sock.groupParticipantsUpdate(groupJid, users, 'demote')   // remove admin
+```
+
+### 🔗 Invite Links
+
+```javascript
+const code = await sock.groupInviteCode(groupJid)
+console.log('🔗 Invite link:', `https://chat.whatsapp.com/${code}`)
+
+// --- Revoke the current link and generate a new one
+await sock.groupRevokeInvite(groupJid)
+
+// --- Join a group using an invite code
+await sock.groupAcceptInvite(inviteCode)
+
+// --- Preview a group before joining
+const info = await sock.groupGetInviteInfo(inviteCode)
+```
+
+### ⚙️ Group Settings
+
+```javascript
+// --- Who can send messages
+await sock.groupSettingUpdate(groupJid, 'announcement')     // only admins can send
+await sock.groupSettingUpdate(groupJid, 'not_announcement') // everyone can send
+
+// --- Who can edit group info
+await sock.groupSettingUpdate(groupJid, 'locked')           // only admins
+await sock.groupSettingUpdate(groupJid, 'unlocked')         // everyone
+
+// --- Approve members manually before they join
+await sock.groupJoinApprovalMode(groupJid, 'on')
+await sock.groupMemberAddMode(groupJid, 'admin_add')
+
+// --- Disappearing messages
+await sock.groupToggleEphemeral(groupJid, 604800) // 7 days — use 0 to disable
+```
+
+### 🚪 Leave a Group
+
+```javascript
+await sock.groupLeave(groupJid)
+```
+
+### 📡 Listening to Group Events
+
+```javascript
+// --- Group metadata changed (subject, description, settings, etc.)
+sock.ev.on('groups.update', updates => {
+   for (const update of updates) {
+      console.log('🛠️ Group updated:', update)
+   }
+})
+
+// --- Participants added, removed, promoted, or demoted
+sock.ev.on('group-participants.update', ({ id, participants, action }) => {
+   console.log(`👥 ${action} in ${id}:`, participants)
+})
+
+// --- Someone requested to join (when join-approval mode is on)
+sock.ev.on('group.join-request', request => {
+   console.log('🙋 Join request:', request)
+})
+```
+
+---
+
+# 🏘️ Community Management
+
+```javascript
+// --- Create a community
+const community = await sock.communityCreate(
+   '🏘️ My Community',
+   'A community for all our projects'
+)
+
+// --- Create a group inside the community
+const group = await sock.communityCreateGroup('📢 Announcements', [], community.id)
+
+// --- Link / unlink an existing group
+await sock.communityLinkGroup(groupJid, communityJid)
+await sock.communityUnlinkGroup(groupJid, communityJid)
+
+// --- Metadata & linked groups
+const metadata = await sock.communityMetadata(communityJid)
+const linked = await sock.communityFetchLinkedGroups(communityJid)
+
+// --- Manage participants (same actions as groups)
+await sock.communityParticipantsUpdate(communityJid, ['917980651473@s.whatsapp.net'], 'add')
+
+// --- Update subject / description
+await sock.communityUpdateSubject(communityJid, '🏘️ New Community Name')
+await sock.communityUpdateDescription(communityJid, 'Updated description')
+
+// --- Invite link
+const code = await sock.communityInviteCode(communityJid)
+
+// --- Leave the community
+await sock.communityLeave(communityJid)
+```
+
+> [!NOTE]
+> Community metadata changes and participant updates are delivered through the same `groups.update` and `group-participants.update` events used for regular groups.
+
+---
+
+# 📰 Newsletter (Channel) Management
+
+```javascript
+// --- Create a newsletter (channel)
+const newsletter = await sock.newsletterCreate(
+   '📰 RabbitXmd News',
+   'Latest updates and announcements'
+)
+console.log('✅ Newsletter created:', newsletter.id)
+
+// --- Get metadata by jid or invite code
+const metadata = await sock.newsletterMetadata('jid', newsletterJid)
+// or: await sock.newsletterMetadata('invite', inviteCode)
+
+// --- Follow / unfollow
+await sock.newsletterFollow(newsletterJid)
+await sock.newsletterUnfollow(newsletterJid)
+
+// --- Mute / unmute
+await sock.newsletterMute(newsletterJid)
+await sock.newsletterUnmute(newsletterJid)
+
+// --- Update name, description & picture
+await sock.newsletterUpdateName(newsletterJid, '📰 Updated Name')
+await sock.newsletterUpdateDescription(newsletterJid, 'New description')
+await sock.newsletterUpdatePicture(newsletterJid, { url: './path/to/logo.jpg' })
+await sock.newsletterRemovePicture(newsletterJid)
+
+// --- React to a newsletter post
+await sock.newsletterReactMessage(newsletterJid, serverId, '🔥')
+
+// --- Fetch newsletter messages
+const messages = await sock.newsletterFetchMessages('jid', newsletterJid, 20)
+
+// --- Admin actions
+await sock.newsletterChangeOwner(newsletterJid, newOwnerJid)
+await sock.newsletterDemote(newsletterJid, userJid)
+await sock.newsletterDelete(newsletterJid)
+
+// --- List newsletters you're subscribed to
+const subscribed = await sock.newsletterSubscribed()
+```
+
+### 📡 Listening to Newsletter Events
+
+```javascript
+sock.ev.on('newsletter-participants.update', update => {
+   console.log('👥 Newsletter participants changed:', update)
+})
+
+sock.ev.on('newsletter-settings.update', update => {
+   console.log('⚙️ Newsletter settings changed:', update)
+})
+
+sock.ev.on('newsletter.reaction', reaction => {
+   console.log('❤️ Newsletter reaction:', reaction)
+})
+
+sock.ev.on('newsletter.view', view => {
+   console.log('👁️ Newsletter viewed:', view)
+})
+```
+
+---
+
+# 📞 Detecting & Rejecting Incoming Calls
+
+```javascript
+sock.ev.on('call', async calls => {
+   for (const call of calls) {
+      console.log(`📞 Call ${call.status} from ${call.from} (video: ${!!call.isVideo})`)
+
+      if (call.status === 'offer') {
+         // --- Automatically reject the incoming call
+         await sock.rejectCall(call.id, call.from)
+      }
+   }
+})
+```
+
+Possible `call.status` values: `offer`, `ringing`, `accept`, `reject`, `timeout`, `terminate`, `relaylatency`.
+
+```javascript
+// --- Create a shareable call link
+const link = await sock.createCallLink('voice') // or 'video'
+console.log('🔗 Call link:', link)
+```
+
+> [!NOTE]
+> This only covers detecting and rejecting incoming calls. To place an actual outbound voice call, see the **📟 Placing Voice Calls (VoIP)** section below.
+
+---
+
+# 📟 Placing Voice Calls (VoIP)
+
+This fork ships a real VoIP layer (`lib/Voip`) that can place genuine outbound **voice** calls over WhatsApp's calling infrastructure, on top of an already-connected `sock`.
+
+> [!IMPORTANT]
+> - Voice only — video calling is **not** supported.
+> - Requires `ffmpeg` installed and available on `PATH` (used to decode/feed audio).
+> - `attach(sock)` must be called on an already-open, authenticated socket.
+> - This is low-level and experimental — the WASM calling engine talks directly to WhatsApp's call signaling, so expect rough edges.
+
+### 🔌 Attach & Place a Call
+
+```javascript
+import { attachVoip, CallState } from '@whiskeysockets/baileys'
+
+// --- Attach the VoIP client to your existing, already-connected sock
+const voip = await attachVoip(sock)
+
+// --- Place an outbound voice call
+const call = await voip.call('917980651473', {
+   durationMs: 120_000,   // auto hang-up after 2 minutes (optional)
+   audioSource: 'silence' // 'silence' | path to an audio file | 'lavfi:<filter>'
+})
+
+call.on('ringing', () => {
+   console.log('📞 Ringing...')
+})
+
+call.on('connected', () => {
+   console.log('✅ Call connected')
+})
+
+call.on('audio', pcm => {
+   // Float32Array of incoming PCM audio from the other side
+})
+
+call.on('ended', reason => {
+   console.log('📴 Call ended:', reason) // 'ended' | 'remote_end' | 'timeout' | 'disconnect'
+})
+
+// --- Mute / unmute your outgoing audio
+call.mute(true)
+call.mute(false)
+
+// --- Manually end the call
+call.end()
+
+// --- Or just await the call finishing
+const endReason = await call.waitForEnd()
+```
+
+### 🎧 Sending Real Audio Instead of Silence
+
+```javascript
+// --- Stream an audio/video file's audio track into the call
+const call = await voip.call('917980651473', {
+   audioSource: './path/to/audio.mp3'
+})
+
+// --- Or feed a generated tone via an ffmpeg lavfi filter
+const toneCall = await voip.call('917980651473', {
+   audioSource: 'lavfi:sine=frequency=440:sample_rate=16000'
+})
+```
+
+### 📴 Cleaning Up
+
+```javascript
+// --- Is a call currently active?
+console.log(voip.busy)
+
+// --- Release VoIP engine/relay resources (does NOT close the underlying sock)
+voip.disconnect()
+```
+
+`call.state` reflects WhatsApp's WASM call-state machine via the `CallState` enum:
+
+| State | Value | Meaning |
+|---|---|---|
+| `Idle` | 0 | No active call |
+| `Calling` | 1 | Dialing out |
+| `PreacceptReceived` | 2 | Ringing on the other end |
+| `ReceivedCall` | 3 | Incoming call received |
+| `AcceptSent` | 4 | We accepted the call |
+| `AcceptReceived` | 5 | Peer accepted the call |
+| `Active` | 6 | Call is live |
+| `ActiveElsewhere` | 7 | Call accepted on another device |
+| `Ending` | 13 | Call is wrapping up |
+
+---
+
+# 👤 Profile & Privacy Management
+
+```javascript
+// --- Update your own profile
+await sock.updateProfileName('🐇 RabbitXmd')
+await sock.updateProfileStatus('✨ Powered by Baileys')
+await sock.updateProfilePicture(sock.user.id, { url: './path/to/avatar.jpg' })
+await sock.removeProfilePicture(sock.user.id)
+
+// --- Get someone's profile picture URL
+const ppUrl = await sock.profilePictureUrl(jid, 'image')
+
+// --- Privacy settings ('all' | 'contacts' | 'contact_blacklist' | 'none')
+await sock.updateLastSeenPrivacy('contacts')
+await sock.updateOnlinePrivacy('all')
+await sock.updateProfilePicturePrivacy('contacts')
+await sock.updateStatusPrivacy('contacts')
+await sock.updateReadReceiptsPrivacy('all')
+await sock.updateCallPrivacy('all')
+await sock.updateGroupsAddPrivacy('contacts')
+
+// --- Presence (typing / online indicators)
+await sock.sendPresenceUpdate('available', jid)   // available | unavailable | composing | recording | paused
+await sock.presenceSubscribe(jid)
+
+sock.ev.on('presence.update', ({ id, presences }) => {
+   console.log('👀 Presence update:', id, presences)
+})
+```
+
+---
+
+# 🚫 Blocklist
+
+```javascript
+// --- Block / unblock a user
+await sock.updateBlockStatus(jid, 'block')
+await sock.updateBlockStatus(jid, 'unblock')
+
+// --- Fetch your current blocklist
+const blocked = await sock.fetchBlocklist()
+
+sock.ev.on('blocklist.update', update => {
+   console.log('🚫 Blocklist changed:', update)
+})
+```
+
+---
+
+# 🔍 Checking Numbers on WhatsApp
+
+```javascript
+const [result] = await sock.onWhatsApp('917980651473')
+
+if (result?.exists) {
+   console.log('✅ Registered on WhatsApp:', result.jid)
+} else {
+   console.log('❌ Not on WhatsApp')
+}
+```
+
+---
+
+# 📡 Quick Reference — All Events
+
+| Event | Fired When |
+|---|---|
+| `connection.update` | Connection state changes (connecting, open, close) |
+| `creds.update` | Auth credentials change — always save these |
+| `messages.upsert` | A new message arrives or history syncs |
+| `messages.update` | A message is edited, revoked, or its status changes |
+| `messages.delete` | A message is deleted |
+| `messages.reaction` | Someone reacts to a message |
+| `message-receipt.update` | Delivery / read receipts update |
+| `chats.upsert` / `chats.update` / `chats.delete` | Chats are added, changed, or removed |
+| `contacts.upsert` / `contacts.update` | Contacts are added or changed |
+| `groups.upsert` / `groups.update` | Group metadata is added or changed |
+| `group-participants.update` | Members are added, removed, promoted, or demoted |
+| `group.join-request` | Someone requests to join a group (approval mode) |
+| `newsletter-participants.update` | Newsletter admin/subscriber changes |
+| `newsletter-settings.update` | Newsletter settings change |
+| `newsletter.reaction` / `newsletter.view` | Reactions/views on a newsletter post |
+| `call` | An incoming or ongoing call event |
+| `presence.update` | Someone's online/typing status changes |
+| `blocklist.update` | Your blocklist changes |
+| `labels.edit` / `labels.association` | Labels are created or applied to a chat |
+| `messaging-history.set` | Initial history sync completes |
+
+```javascript
+sock.ev.on('messages.reaction', reactions => {
+   console.log('❤️ Reaction:', reactions)
+})
+
+sock.ev.on('messages.delete', item => {
+   console.log('🗑️ Message deleted:', item)
+})
+```
