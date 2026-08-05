@@ -48,12 +48,18 @@
   - [🫙 Hydrated Template](#-hydrated-template)
 - [💳 Sending Payment Messages](#-sending-payment-messages)
 - [📨 Handling Incoming Messages](#-handling-incoming-messages)
+  - [✔️✔️ Sending Real Read Receipts](#️️-sending-real-read-receipts)
+  - [🔁 Recovering Failed / Expired Media](#-recovering-failed--expired-media)
+  - [📜 On-Demand History Sync](#-on-demand-history-sync)
+  - [🔄 Requesting a Resend for a "Placeholder" Message](#-requesting-a-resend-for-a-placeholder-message)
 - [👥 Group Management](#-group-management)
   - [🧱 Create \& Fetch](#-create--fetch)
   - [✏️ Update Subject / Description](#️-update-subject--description)
   - [👤 Manage Participants](#-manage-participants)
   - [🔗 Invite Links](#-invite-links)
   - [⚙️ Group Settings](#️-group-settings)
+  - [🙋 Approving / Rejecting Join Requests](#-approving--rejecting-join-requests)
+  - [🏷️ Group Member Tag](#️-group-member-tag)
   - [🚪 Leave a Group](#-leave-a-group)
   - [📡 Listening to Group Events](#-listening-to-group-events)
 - [🏘️ Community Management](#️-community-management)
@@ -74,6 +80,7 @@
 - [📇 Contact Management](#-contact-management)
 - [🏪 Business Tools (Catalog \& Storefront)](#-business-tools-catalog--storefront)
 - [📡 Quick Reference — All Events](#-quick-reference--all-events)
+- [🔌 Session Management](#-session-management)
 
 ### 🛠️ Internal Adjustments
 
@@ -1362,6 +1369,47 @@ sock.ev.on('messages.upsert', async ({ messages, type }) => {
 > [!NOTE]
 > `type` is `'notify'` for a freshly received message and `'append'` for messages that arrive as part of history sync or while you were offline.
 
+### ✔️✔️ Sending Real Read Receipts
+
+`chatModify({ markRead: true }, ...)` only updates your own app-state (so *your* chat list shows it as read). To actually send the blue-tick read receipt to the other person, use `readMessages`:
+
+```javascript
+await sock.readMessages([msg.key]) // marks one or more messages as read on the wire
+```
+
+### 🔁 Recovering Failed / Expired Media
+
+If a media message fails to download because the media has expired on WhatsApp's servers, you can ask the sender's device to re-upload it:
+
+```javascript
+try {
+   await sock.downloadMediaMessage(msg)
+} catch {
+   await sock.updateMediaMessage(msg) // requests a fresh re-upload, then retry the download
+}
+```
+
+### 📜 On-Demand History Sync
+
+Pull older messages for a chat beyond what was synced on connect:
+
+```javascript
+await sock.fetchMessageHistory(
+   50,                 // how many messages to request
+   oldestMsg.key,      // the oldest message key you currently have
+   oldestMsg.messageTimestamp
+)
+// the results arrive later through the regular 'messaging-history.set' event
+```
+
+### 🔄 Requesting a Resend for a "Placeholder" Message
+
+Occasionally a message arrives as an empty/placeholder stub (e.g. view-once or a decrypt failure). You can ask the sender's device to resend it:
+
+```javascript
+await sock.requestPlaceholderResend(msg.key)
+```
+
 ---
 
 # 👥 Group Management
@@ -1434,6 +1482,32 @@ await sock.groupMemberAddMode(groupJid, 'admin_add')
 
 // --- Disappearing messages
 await sock.groupToggleEphemeral(groupJid, 604800) // 7 days — use 0 to disable
+```
+
+### 🙋 Approving / Rejecting Join Requests
+
+When `groupJoinApprovalMode(jid, 'on')` is enabled, new members don't join instantly — they show up as pending requests that an admin must approve.
+
+```javascript
+// --- List everyone waiting to be approved
+const pending = await sock.groupRequestParticipantsList(groupJid)
+console.log(pending) // [{ jid, type: 'invite' | 'link', ... }]
+
+// --- Approve or reject them
+await sock.groupRequestParticipantsUpdate(groupJid, ['917980651473@s.whatsapp.net'], 'approve')
+await sock.groupRequestParticipantsUpdate(groupJid, ['917980651473@s.whatsapp.net'], 'reject')
+```
+
+### 🏷️ Group Member Tag
+
+Set a short custom label next to your name inside a specific group (distinct from group-wide labels).
+
+```javascript
+await sock.updateMemberLabel(groupJid, '🛠️ Moderator')
+
+sock.ev.on('group.member-tag.update', update => {
+   console.log('🏷️ Member tag changed:', update)
+})
 ```
 
 ### 🚪 Leave a Group
@@ -1763,6 +1837,10 @@ await sock.updateReadReceiptsPrivacy('all')
 await sock.updateCallPrivacy('all')
 await sock.updateGroupsAddPrivacy('contacts')
 
+// --- Fetch your current privacy settings (what readMessages() checks internally)
+const privacy = await sock.fetchPrivacySettings()
+console.log(privacy) // { readreceipts, groupadd, status, online, last, ... }
+
 // --- Presence (typing / online indicators)
 await sock.sendPresenceUpdate('available', jid)   // available | unavailable | composing | recording | paused
 await sock.presenceSubscribe(jid)
@@ -1967,3 +2045,18 @@ sock.ev.on('messages.delete', item => {
    console.log('🗑️ Message deleted:', item)
 })
 ```
+
+---
+
+# 🔌 Session Management
+
+```javascript
+// --- Log out (invalidates the session on WhatsApp's side too — you'll need to re-scan/re-pair)
+await sock.logout()
+
+// --- Just close the socket connection (keeps the session/creds valid for reconnecting)
+sock.end(undefined)
+```
+
+> [!NOTE]
+> Use `sock.end()` for a normal disconnect/reconnect (e.g. on `connection.update` with `DisconnectReason.restartRequired`). Only use `sock.logout()` when you actually want to sign the device out of WhatsApp.
