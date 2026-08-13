@@ -48,6 +48,7 @@
   - [🫙 Hydrated Template](#-hydrated-template)
 - [💳 Sending Payment Messages](#-sending-payment-messages)
 - [📨 Handling Incoming Messages](#-handling-incoming-messages)
+  - [🧭 Detecting Message Type](#-detecting-message-type)
   - [✔️✔️ Sending Real Read Receipts](#️️-sending-real-read-receipts)
   - [🔁 Recovering Failed / Expired Media](#-recovering-failed--expired-media)
   - [📜 On-Demand History Sync](#-on-demand-history-sync)
@@ -1368,6 +1369,28 @@ sock.ev.on('messages.upsert', async ({ messages, type }) => {
 
 > [!NOTE]
 > `type` is `'notify'` for a freshly received message and `'append'` for messages that arrive as part of history sync or while you were offline.
+
+### 🧭 Detecting Message Type
+
+`detectMessageType()` inspects a message (a full `WAMessage`/`WebMessageInfo`, or a raw message-content object) and returns its effective type as a single string — no need to manually unwrap ephemeral, view-once, edited, or revoked wrappers yourself.
+
+```javascript
+import { detectMessageType } from '@whiskeysockets/baileys'
+
+sock.ev.on('messages.upsert', ({ messages }) => {
+   for (const msg of messages) {
+      const type = detectMessageType(msg)
+      console.log(type) // e.g. 'text', 'image', 'ptt', 'poll', 'viewonce'...
+   }
+})
+```
+
+Possible return values:
+
+`text` · `image` · `video` · `gif` · `audio` · `ptt` · `sticker` · `document` · `reaction` · `viewonce` · `edited` · `revoke` · `interactive` · `poll` · `location` · `contact` · `unknown`
+
+> [!NOTE]
+> Uses substring matching (not exact key equality) internally, so WhatsApp adding new versioned variants (`pollCreationMessageV3`, `buttonsMessageV2`, etc.) won't fall through to `'unknown'`. GIFs are distinguished from videos via `gifPlayback`, and voice notes (`ptt`) from regular audio.
 
 ### ✔️✔️ Sending Real Read Receipts
 
