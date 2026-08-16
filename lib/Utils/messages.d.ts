@@ -27,6 +27,10 @@ export function hasOptionalProperty(obj: any, key: any): boolean;
 export function hasValidAlbumMedia(message: any): boolean;
 export function hasValidInteractiveHeader(message: any): boolean;
 export function hasValidCarouselHeader(message: any): boolean;
+export function makeGroupStatusAttribution(input: {
+    authorJid: string;
+    actionUrl?: string;
+}): proto.StatusAttribution;
 export function generateWAMessageContent(message: any, options: any): Promise<any>;
 export function generateWAMessageFromContent(jid: any, message: any, options: any): proto.WebMessageInfo;
 export function generateWAMessage(jid: any, content: any, options: any): Promise<proto.WebMessageInfo>;
