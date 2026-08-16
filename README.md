@@ -31,6 +31,8 @@
   - [🌏 Message with Inline Entities](#-message-with-inline-entities)
   - [📋 Message with Table](#-message-with-table)
   - [🎞️ Status Mention](#️-status-mention)
+  - [❤️ Group Status Reaction](#️-group-status-reaction)
+  - [🏷️ Group Status Attribution](#️-group-status-attribution)
 - [📁 Sending Media Messages](#-sending-media-messages)
   - [🖼️ Image](#️-image)
   - [🎥 Video](#-video)
@@ -123,6 +125,11 @@
   - 🗄️ `interactiveAsTemplate`
   - 🔒 `secureMetaServiceLabel`
   - 📄 `raw`
+
+- 👁️ Added optional fields:
+  - ❤️ `groupStatusReaction` — react to a group status
+  - 🏷️ `groupStatusAttribution` — attach a "shared from this group" badge to a status
+  - 🎞️ `statusMentions` (in `options`) — mention group/user JIDs on a normal `status@broadcast` send
 
 ### 📥 Installation
 
@@ -880,6 +887,72 @@ sock.sendMessage(jid, {
 ```javascript
 sock.sendMessage([jidA, jidB, jidC], {
    text: 'Hello! 👋🏻'
+})
+```
+
+`jidA`/`jidB`/`jidC` can be a user JID (`@s.whatsapp.net`) or a group JID (`@g.us`) — passing a group JID mentions the whole group and every participant gets added automatically.
+
+Alternatively, mentions can be sent alongside a normal `'status@broadcast'` call using `statusMentions` in `options`, without switching `jid` to an array. This works with any status content type (text, image, video, etc.).
+
+```javascript
+await sock.sendMessage('status@broadcast', {
+  image: { url: './photo.jpg' },
+  caption: 'Only for specific people'
+}, {
+  statusJidList: [jidA, jidB],
+  statusMentions: [
+    groupJid,  // group JID -> mentions the group, members are added to statusJidList automatically
+    jidC       // user JID -> mentions that user
+  ]
+})
+```
+
+#### ❤️ Group Status Reaction
+
+React to a status shared inside a group.
+
+```javascript
+await sock.sendMessage(groupJid, {
+  groupStatusReaction: {
+    key: groupStatusMessage.key,
+    text: '❤️'
+  }
+})
+```
+
+`groupingKey` and `senderTimestampMs` can also be supplied; `senderTimestampMs` defaults to the current time.
+
+#### 🏷️ Group Status Attribution
+
+Attach a "shared from this group" attribution badge to a status.
+
+```javascript
+await sock.sendMessage('status@broadcast', {
+  text: 'Shared in the group',
+  groupStatusAttribution: {
+    authorJid: '1234567890@s.whatsapp.net'
+  }
+}, {
+  statusJidList: audienceJids
+})
+```
+
+The attribution can also be created manually with `makeGroupStatusAttribution` and appended to `contextInfo.statusAttributions`.
+
+```javascript
+import { makeGroupStatusAttribution } from '@whiskeysockets/baileys'
+
+const attribution = makeGroupStatusAttribution({
+  authorJid: '1234567890@s.whatsapp.net'
+})
+
+await sock.sendMessage('status@broadcast', {
+  text: 'Shared in the group',
+  contextInfo: {
+    statusAttributions: [attribution]
+  }
+}, {
+  statusJidList: audienceJids
 })
 ```
 
