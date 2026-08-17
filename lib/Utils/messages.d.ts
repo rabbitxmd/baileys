@@ -27,6 +27,13 @@ export function hasOptionalProperty(obj: any, key: any): boolean;
 export function hasValidAlbumMedia(message: any): boolean;
 export function hasValidInteractiveHeader(message: any): boolean;
 export function hasValidCarouselHeader(message: any): boolean;
+export function makeNewsletterStatusAttribution(input: {
+    newsletterJid: string;
+    messageId: number;
+    duration?: number;
+    hasMultipleReshares?: boolean;
+    actionUrl?: string;
+}): proto.StatusAttribution;
 export function makeGroupStatusAttribution(input: {
     authorJid: string;
     actionUrl?: string;
