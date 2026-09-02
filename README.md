@@ -1739,6 +1739,116 @@ sock.ev.on('newsletter.view', view => {
 
 ---
 
+# 📊 Channel Status (Native Newsletter Status)
+
+```javascript
+// --- Send a status update to a channel (text, image, video, audio, gif)
+const status = await sock.newsletterSendStatus(newsletterJid, {
+   text: 'Big announcement coming soon! 🎉'
+})
+
+// or with media:
+await sock.newsletterSendStatus(newsletterJid, {
+   image: { url: './banner.jpg' },
+   caption: 'New product drop 🚀'
+})
+
+// --- React to a channel status
+await sock.newsletterReactStatus(newsletterJid, statusServerId, '🔥')
+
+// --- Revoke / delete a channel status
+await sock.newsletterRevokeStatus(newsletterJid, statusServerId)
+
+// --- Fetch current live statuses on a channel
+const statuses = await sock.newsletterFetchStatuses(newsletterJid)
+
+// --- Fetch new status updates since a checkpoint
+const updates = await sock.newsletterFetchStatusUpdates(newsletterJid)
+```
+
+---
+
+# 🛠️ Advanced Channel Management
+
+```javascript
+// --- Mute / unmute your own or followers' notifications
+await sock.newsletterUpdateUserSetting(newsletterJid, 'ADMIN_NOTIFICATIONS', true)
+
+// --- Control who can react to channel posts: 'ALL' | 'BASIC' | 'NONE' | 'BLOCKLIST'
+await sock.newsletterUpdateReactions(newsletterJid, 'ALL')
+
+// --- Fetch edits / deletions of previously sent messages
+const msgUpdates = await sock.newsletterFetchMessageUpdates(newsletterJid, { count: 20 })
+
+// --- Poll voters & casting a vote
+const voters = await sock.newsletterPollVoters(newsletterJid, pollServerId)
+await sock.newsletterSendPollVote(newsletterJid, pollServerId, 'Option A')
+
+// --- Who reacted to a post
+const reactors = await sock.newsletterReactionSenders(newsletterJid, serverId)
+
+// --- Pin / unpin messages
+await sock.newsletterPinMessages(newsletterJid, [serverId1, serverId2])
+await sock.newsletterUnpinMessages(newsletterJid, [serverId1])
+
+// --- Label content
+await sock.newsletterLabelAiContent(newsletterJid, serverId)
+await sock.newsletterLabelPaidPartnership(newsletterJid, serverId)
+
+// --- Question responses (for Q&A style posts)
+const responses = await sock.newsletterQuestionResponses(newsletterJid, serverId)
+await sock.newsletterQuestionResponseState(newsletterJid, serverId, responseServerId, 'READ')
+
+// --- Add-ons (reactions/poll info per message, includes status add-ons)
+const addOns = await sock.newsletterMyAddOns()
+const statusAddOns = await sock.newsletterStatusMyAddOns()
+```
+
+### 👑 Admin Tools
+
+```javascript
+// --- Check your admin capabilities on a channel
+const caps = await sock.newsletterAdminCapabilities(newsletterJid)
+const canPost = await sock.newsletterCanPostStatus(newsletterJid)
+
+// --- Admin profile info
+const adminInfo = await sock.newsletterAdminInfo(newsletterJid)
+
+// --- Invite / manage co-admins
+await sock.newsletterCreateAdminInvite(newsletterJid, userJid)
+await sock.newsletterRevokeAdminInvite(newsletterJid, userJid)
+await sock.newsletterAcceptAdminInvite(newsletterJid)
+const pending = await sock.newsletterPendingAdminInvites(newsletterJid)
+
+// --- Enforcement / violation history & appeals
+const enforcements = await sock.newsletterEnforcements(newsletterJid)
+const reports = await sock.newsletterReports()
+await sock.newsletterAppealReport(reportId, 'This was a mistake')
+
+// --- Analytics
+const insights = await sock.newsletterInsights(newsletterJid)
+const followers = await sock.newsletterFollowers(newsletterJid)
+```
+
+### 🔍 Channel Directory & Discovery
+
+```javascript
+// --- Browse recommended / trending channels
+const list = await sock.newsletterDirectoryList({ view: 'RECOMMENDED', limit: 20 })
+
+// --- Search channels by name
+const results = await sock.newsletterDirectorySearch('news')
+
+// --- Browse by category
+const categories = await sock.newsletterDirectoryCategories()
+
+// --- Get recommended channels globally, or similar to one you already follow
+const recommended = await sock.newsletterRecommended()
+const similar = await sock.newsletterSimilar(newsletterJid)
+```
+
+---
+
 # 📞 Detecting & Rejecting Incoming Calls
 
 ```javascript
