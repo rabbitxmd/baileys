@@ -1,7 +1,7 @@
 {
-   "name": "@whiskeysockets/baileys",
+   "name": "my-baileys-bot",
    "version": "1.0.0",
-   "description": "Create By Rabbitxmd.",
+   "description": "POWERED BY RABBITXMD.",
    "main": "lib/index.js",
    "types": "lib/index.d.ts",
    "type": "module",
@@ -41,6 +41,7 @@
       "@hapi/boom": "^9.1.3",
       "@roamhq/wrtc": "^0.8.0",
       "async-mutex": "^0.5.0",
+      "cache-manager": "^7.2.8",
       "fflate": "^0.8.2",
       "libsignal": "^6.0.0",
       "lru-cache": "^11.2.6",
