@@ -941,7 +941,7 @@ await sock.sendMessage(jid, {
 <a id="mention-orang-grup"></a>
 ### Mentions (people & groups)
 
-**Person mentions** — put `@<nomor>` in the text and list the full JID in `mentions`:
+**Person mentions** — put `@<number>` in the text and list the full JID in `mentions`:
 
 ```js
 await sock.sendMessage(jid, {
@@ -979,7 +979,7 @@ await sock.sendMessage(jid, {
   forwardedNewsletter: {
     newsletterJid: '120363XXXXXXXXXXXX@newsletter',
     serverMessageId: 42,
-    newsletterName: 'Nama Channel',
+    newsletterName: 'Channel Name',
     contentType: 0
   }
 })
@@ -1015,7 +1015,7 @@ await sock.sendMessage(jid, {
 ```js
 await sock.sendMessage(jid, {
   document: { url: 'https://example.com/file.pdf' },
-  fileName: 'dokumen.pdf',
+  fileName: 'document.pdf',
   mimetype: 'application/pdf'
 })
 ```
@@ -1305,9 +1305,9 @@ await sock.sendMessage(jid, {
   richLink: {
     text: 'listen to this',
     url: 'https://example.com/track',
-    title: 'Judul Lagu',
-    description: 'Penyanyi',
-    image: { url: './sampul.jpg' }
+    title: 'Song Title',
+    description: 'Artist',
+    image: { url: './cover-art.jpg' }
   }
 })
 ```
@@ -1340,11 +1340,11 @@ If you already have your own preview pipeline, `linkPreview` accepts the same `i
 
 ```js
 await sock.sendMessage(jid, {
-  text: 'lihat https://example.com/a',
+  text: 'see https://example.com/a',
   linkPreview: {
     'matched-text': 'https://example.com/a',
-    title: 'Judul',
-    description: 'Keterangan',
+    title: 'Title',
+    description: 'Description',
     image: { url: './image.jpg' }
   }
 })
@@ -1357,8 +1357,8 @@ await sock.sendMessage(jid, {
   text: 'no link here',
   linkPreview: {
     'matched-text': 'https://example.com',
-    title: 'Judul',
-    description: 'Keterangan',
+    title: 'Title',
+    description: 'Description',
     image: { url: './image.jpg' }
   }
 })
@@ -1438,16 +1438,16 @@ await sock.sendMessage(jid, {
     total: 150000,
     currency: 'IDR',
     description: 'Makan bareng',
-    requesterJid: '628xxxx@s.whatsapp.net',
+    requesterJid: '918xxxx@s.whatsapp.net',
     participants: [
-      { jid: '6281xxxx@s.whatsapp.net', amount: 50000 },
-      { jid: '6282xxxx@s.whatsapp.net', amount: 100000, status: SplitPaymentStatus.PAID }
+      { jid: '9181xxxx@s.whatsapp.net', amount: 50000 },
+      { jid: '9182xxxx@s.whatsapp.net', amount: 100000, status: SplitPaymentStatus.PAID }
     ]
   }
 })
 
 await sock.sendMessage(jid, {
-  splitPaymentUpdate: { splitId: 'makan-01', participantJid: '6281xxxx@s.whatsapp.net' }
+  splitPaymentUpdate: { splitId: 'makan-01', participantJid: '9181xxxx@s.whatsapp.net' }
 })
 
 await sock.sendMessage(jid, {
@@ -1878,7 +1878,7 @@ getBizNativeFlowName = ({ interactiveMessage: m }) => {
   const p = m?.nativeFlowMessage?.buttons
   if (p?.length > 0 && !buttonsViolateButtonImprovementsConstraints(p.map(b => ({ nativeFlowButton: b }))))
       return MB.getNativeFlowNameByButtonName(p[0].name)          // ← the only branch the bot reaches
-  if (e.buttonsMessage?.buttons?.length === 1) return …          // buttonsMessage lama
+  if (e.buttonsMessage?.buttons?.length === 1) return …          // the old buttonsMessage
   const f = !(p?.length) && (body.text || header.title || footer.text || header.imageMessage) && !m?.shopStorefrontMessage
   if (f) return MIXED                                            // ← only if there is NO button
   // otherwise: undefined
@@ -1947,10 +1947,10 @@ Node `<biz>` is the other half, and this library already sends it. If its first 
 Here’s the complete mix via `sendMessage`, with no imports — one button type, still within the limit, so it renders everywhere:
 
 ```js
-const teks = '✨ rabbitxmd MENU\\n\\nChoose a category below.'
+const text = '✨ rabbitxmd MENU\\n\\nChoose a category below.'
 
 await sock.sendMessage(jid, {
-  text: teks,
+  text: text,
   footer: 'rabbitxmd - MultiDevice',
   nativeFlow: [
     { text: 'All Menu Items', id: '.allmenu' },
@@ -1958,11 +1958,11 @@ await sock.sendMessage(jid, {
     { text: 'Sticker', id: '.menu sticker' }
   ],
   optionText: 'Choose a Category',
-  optionTitle: 'Kategori',
+  optionTitle: 'Category',
   bloksWidget: {
     type: 'im_a2ui',
     uuid: crypto.randomUUID(),
-    fallback: teks,
+    fallback: text,
     data: JSON.stringify({ type: 'info_card', title: '✨ MENU rabbitxmd', body: 'Choose a category below.' })
   }
 })
@@ -1975,11 +1975,11 @@ await sock.sendMessage(jid, {
   text: 'All types of buttons in one message',
   footer: 'rabbitxmd - MultiDevice',
   nativeFlow: [
-    { text: 'Balas', id: '.menu' },
+    { text: 'Reply', id: '.menu' },
     { text: 'Website', url: 'https://nixel.dev' },
-    { text: 'Telepon', call: '+918000000000' },
+    { text: 'Call', call: '+918000000000' },
     { name: 'send_location', buttonParamsJson: '' },
-    { text: 'Choose', sections: [{ title: 'Kategori', rows: [{ title: 'Downloader', id: '.menu downloader' }] }] }
+    { text: 'Choose', sections: [{ title: 'Category', rows: [{ title: 'Downloader', id: '.menu downloader' }] }] }
   ]
 })
 ```
@@ -1988,7 +1988,7 @@ It logs the constraint warnings and is displayed on the phone. If the same messa
 
 ```js
 await sock.sendMessage(jid, {
-  text: 'Tautan penting',
+  text: 'Important link',
   nativeFlow: [
     { text: 'Website', url: 'https://nixel.dev' },
     { text: 'Channel', url: 'https://whatsapp.com/channel/xxxx' }
@@ -2153,14 +2153,14 @@ const rich = new MB.AIRich(sock)
   .setTitle('rabbitxmd AI')
   .setFooter('Made with AIRich')
 
-rich.addText('*Laporan render*')
+rich.addText('*Render report*')
 rich.addSection(MB.dividerSection(), { id: 'rule' })
 rich.addSection(MB.spacerSection({ spacing: 3 }))
 rich.addSection(MB.imageSection('https://example.com/photo.jpg'))
 rich.addSection(MB.taskSection({ taskId: 'job-1', title: 'Rendering', subtitle: 'frame 12/60', status: MB.TaskStatus.RUNNING }))
 rich.addSection(MB.latexSection('E = mc^2'))
-rich.addSection(MB.thinkingSection('Mencari di web…', { icon: MB.ThinkingIcon.WEB_SEARCH }))
-rich.addSection(MB.progressSection('Hampir selesai', { inProgress: false }))
+rich.addSection(MB.thinkingSection('Searching the web…', { icon: MB.ThinkingIcon.WEB_SEARCH }))
+rich.addSection(MB.progressSection('Almost done', { inProgress: false }))
 
 await rich.send(jid)
 ```
@@ -2218,14 +2218,14 @@ The remaining `AI_RICH_PRIMITIVES` — maps, video, reminders, sports, search-pl
 
 Two odd names sit in the middle: `GenAIFollowUpSuggestionPillPrimitive` and `GenAITaskPrimitive` have parsers only in `cometComposedTextV2GenAiUxPrimitiveParser`, Facebook’s Comet renderer, and in no `WAWeb*` module — but both names are in the Android dex, so that app is where to test them. On desktop, both land on empty nodes, like everything outside the table above.
 
-Inline entities are the only place where an unknown name becomes fatal instead of being ignored — see the warning in [Inline Entity di Dalam Teks](#inline-entity-di-dalam-teks). `AI_RICH_INLINE_ENTITIES` remains closed at four for that reason.
+Inline entities are the only place where an unknown name becomes fatal instead of being ignored — see the warning in [Inline Entities in Text](#inline-entity-di-dalam-teks). `AI_RICH_INLINE_ENTITIES` remains closed at four for that reason.
 
 <a id="sub-node-di-dalam-primitifnya"></a>
 #### Sub-nodes inside primitives
 
 Because Meta AI messages are **forwarded** from Meta AI rather than built locally, what matters isn’t whether a name is rendered, but whether the decoder recognizes it. The three lists above only mention section-level nodes. Under each primitive are still nested objects with their own `__typename` — table rows, team icons, a place’s opening hours — and `AI_RICH_NODES` lists **50** of them.
 
-Each entry in that list has the same evidence: the APK contains a Kotlin model class `<nama>Impl.kt` for it. That’s also the distinction that sets them apart from AB flags and telemetry names, which look similar but never have model classes.
+Each entry in that list has the same evidence: the APK contains a Kotlin model class `<name>Impl.kt` for it. That’s also the distinction that sets them apart from AB flags and telemetry names, which look similar but never have model classes.
 
 Four of them have just appeared in the Android beta `2.26.37.1`: `GenAIStepDeepResearchEntry`, `GenAIStepSkillEntry`, `GenAIStepSubagentEntry`, and `GenAIStepWebLinkSource` — all siblings of `GenAIStepThoughtEntry` on the reasoning surface, and none of them appear in the WA Web bundle, so they are purely names to decode.
 
@@ -2293,7 +2293,7 @@ rich.addSection(MB.sportsSection({
 
 rich.addSection(MB.actionListSection([
   MB.actionListRow({ title: 'Open map', url: 'https://maps.example.com' }),
-  MB.actionListRow({ title: 'Telepon', action: 'tel:+91800000000' })
+  MB.actionListRow({ title: 'Call', action: 'tel:+91800000000' })
 ]))
 
 rich.addSection(MB.searchPlannerSection({
@@ -2426,7 +2426,7 @@ Its name appears in the dex as `GenAIUXPrimitiveImpl.kt` and was once also regis
 <a id="dua-primitif-yang-bentuknya-belum-terbaca"></a>
 #### Two primitives whose shapes are still unreadable
 
-`AI_RICH_PRIMITIVES_WITHOUT_SCHEMA` mentions `GenAIClippyWidgetPrimitive` and `GenAIClippyFollowUpPrimitive`. Both are real — the dex contains `<nama>Impl.kt` for each — but their field names cannot be read from anywhere. The WA Web bundle does not include their typenames at all, and no code references their name strings in the dex, so there are no field reads to follow. The only verified piece is the `ClippyArtifactType` enum (`MINI_APP`, `STATIC_HTML`).
+`AI_RICH_PRIMITIVES_WITHOUT_SCHEMA` mentions `GenAIClippyWidgetPrimitive` and `GenAIClippyFollowUpPrimitive`. Both are real — the dex contains `<name>Impl.kt` for each — but their field names cannot be read from anywhere. The WA Web bundle does not include their typenames at all, and no code references their name strings in the dex, so there are no field reads to follow. The only verified piece is the `ClippyArtifactType` enum (`MINI_APP`, `STATIC_HTML`).
 
 So there are no factories for either: guessing field names would mean making them up, and guessed fields would not be rendered. If you want to try their shapes yourself, `customSection` sends them as-is.
 
@@ -3285,7 +3285,7 @@ Status is sent to the special jid `status@broadcast`, and the recipients are the
 await sock.sendMessage('status@broadcast', {
   text: 'Hello everyone'
 }, {
-  statusJidList: ['628xxxx@s.whatsapp.net', '628yyyy@s.whatsapp.net']
+  statusJidList: ['918xxxx@s.whatsapp.net', '918yyyy@s.whatsapp.net']
 })
 ```
 
@@ -3373,12 +3373,12 @@ Media statuses are ordinary media messages sent to `status@broadcast`:
 
 ```js
 await sock.sendMessage('status@broadcast', {
-  image: { url: './foto.jpg' },
+  image: { url: './photo.jpg' },
   caption: 'Hello everyone'
 }, { statusJidList })
 
 await sock.sendMessage('status@broadcast', {
-  video: { url: './klip.mp4' },
+  video: { url: './clip.mp4' },
   caption: 'Hello everyone'
 }, { statusJidList })
 ```
@@ -3387,7 +3387,7 @@ The **voice message** status is the only media type that also receives a backgro
 
 ```js
 await sock.sendMessage('status@broadcast', {
-  audio: { url: './suara.ogg' },
+  audio: { url: './voice.ogg' },
   mimetype: 'audio/ogg; codecs=opus',
   ptt: true
 }, {
@@ -3411,7 +3411,7 @@ import {
 } from '@whiskeysockets/baileys'
 
 await sock.sendMessage('status@broadcast', {
-  image: { url: './liburan.jpg' },
+  image: { url: './vacation.jpg' },
   caption: 'Weekend',
   statusStickers: [
     locationSticker({
@@ -3465,10 +3465,10 @@ A regular audio message with cover art, title, and artist in `externalAdReply`. 
 ```js
 await sock.sendMessage(jid, {
   song: {
-    audio: { url: './lagu.mp3' },
-    artwork: { url: './sampul.jpg' },
-    title: 'Judul Lagu',
-    author: 'Penyanyi',
+    audio: { url: './song.mp3' },
+    artwork: { url: './cover-art.jpg' },
+    title: 'Song Title',
+    author: 'Artist',
     url: 'https://example.com/track'
   }
 })
@@ -3486,8 +3486,8 @@ await sock.sendMessage(jid, {
     audio: { url: './audio.opus' },
     mimetype: 'audio/ogg; codecs=opus',
     ptt: true,
-    artwork: { url: './sampul.jpg' },
-    title: 'Judul'
+    artwork: { url: './cover-art.jpg' },
+    title: 'Title'
   }
 })
 ```
@@ -3586,7 +3586,7 @@ Media works the same way — `groupStatus: true` together with `image`, `video`,
 
 ```js
 await sock.sendMessage(groupJid, {
-  audio: { url: './suara.ogg' },
+  audio: { url: './voice.ogg' },
   mimetype: 'audio/ogg; codecs=opus',
   ptt: true,
   groupStatus: true
@@ -4156,7 +4156,7 @@ await sock.newsletterAcceptAdminInvite('123456789@newsletter')
 
 ```js
 const pending = await sock.newsletterPendingAdminInvites('123456789@newsletter')
-// [ { id: '628xxxxxxxxx@s.whatsapp.net', phoneNumber: '628xxxxxxxxx' } ]
+// [ { id: '918xxxxxxxxx@s.whatsapp.net', phoneNumber: '918xxxxxxxxx' } ]
 ```
 
 <a id="mencari-channel"></a>
@@ -4603,8 +4603,8 @@ const blocked = await sock.fetchBlocklist()
 ```js
 import { SPAM_FLOWS } from '@whiskeysockets/baileys'
 
-const laporan = await sock.reportSpam(jid)
-// { jid: '628xxxx@s.whatsapp.net', flow: 'overflow_menu_report', reported: true, node }
+const report = await sock.reportSpam(jid)
+// { jid: '918xxxx@s.whatsapp.net', flow: 'overflow_menu_report', reported: true, node }
 
 await sock.reportSpam(groupJid, {
     flow: SPAM_FLOWS.GroupInfoReport,
@@ -4768,7 +4768,7 @@ Accept one or many usernames at once: plain strings, or an `{ username, pin }` o
 The reverse direction — **JID → `@username`** — uses `getUsernames`:
 
 ```js
-const names = await sock.getUsernames('628123@s.whatsapp.net', '234256710246613@lid')
+const names = await sock.getUsernames('918123@s.whatsapp.net', '234256710246613@lid')
 for (const entry of names) {
   console.log(entry.jid, entry.username)
 }
@@ -4908,7 +4908,7 @@ Labels for other members arrive through events, not queries:
 
 ```js
 sock.ev.on('group.member-tag.update', ({ groupId, participant, label }) => {
-  console.log(participant, 'di', groupId, 'sekarang', label)
+  console.log(participant, 'in', groupId, 'now:', label)
 })
 ```
 
@@ -4993,13 +4993,13 @@ For queues where the next song still needs to be found, give the pause a toleran
 
 ```js
 const call = await voip.call('918123456789', {
-    playlist: [await findTrack('lagu pertama')],
+    playlist: [await findTrack('first song')],
     idleGraceMs: 30000,
     durationMs: 0
 })
 
-call.on('track', track => console.log('memutar', track))
-call.on('trackend', track => console.log('selesai', track))
+call.on('track', track => console.log('playing', track))
+call.on('trackend', track => console.log('done', track))
 
 call.on('idle', async () => {
     const next = await findTrack(queue.shift())
@@ -5023,18 +5023,18 @@ Both one-on-one and group calls support video. Frames come from ffmpeg just like
 ```js
 const call = await voip.call('918123456789', {
     video: true,
-    videoPlaylist: ['klip.mp4'],
-    playlist: ['lagu.mp3'],
+    videoPlaylist: ['clip.mp4'],
+    playlist: ['song.mp3'],
     durationMs: 0
 })
 
-call.on('videotrack', track => console.log('sekarang menampilkan', track))
+call.on('videotrack', track => console.log('now showing', track))
 ```
 
 ```js
 const call = await voip.callGroup('12345-67890@g.us', {
     video: true,
-    videoPlaylist: ['klip.mp4']
+    videoPlaylist: ['clip.mp4']
 })
 ```
 
@@ -5043,7 +5043,7 @@ Video has its own queue, separate from the audio queue: `playVideo`, `enqueueVid
 Still images are repeated continuously rather than displayed as a single frame, making them an easy way to send a static card:
 
 ```js
-await voip.call('918123456789', { video: true, videoSource: './poster.jpg', playlist: ['lagu.mp3'] })
+await voip.call('918123456789', { video: true, videoSource: './poster.jpg', playlist: ['song.mp3'] })
 ```
 
 The engine selects a resolution and frame rate when the call connects, and the feed scales to fit, adding padding to preserve the aspect ratio. Frames are sent as I420 directly to the WASM encoder — there’s no WebCodecs in Node, so the browser’s encoding path isn’t used. When the queue runs dry, the last frame is held instead of cutting to black, so stuttering looks like a frozen image rather than a flicker.
@@ -5096,9 +5096,9 @@ const call = await voip.joinGroupCall({
 
 The queue behaves the same in group calls and one-on-one calls.
 
-The stack includes `whatsapp.wasm`, `loader.js`, and `worker-modules.js` under `lib/assets/wasm/`, so it runs out of the box; `wasmPath`, `resourcesPath`, and `wasmBinary` are there for when you want to point it at a newer build, and `storageDir` moves its engine’s working directory from the system’s default temp directory. It needs `ffmpeg` for its output media; set `ffmpegPath` in the client or `FFMPEG_PATH` in the environment if the binary isn’t in `PATH`.
+The stack includes `whatsapp.wasm`, `loader.js`, and `worker-modules.js` under `src/assets/wasm/`, so it runs out of the box; `wasmPath`, `resourcesPath`, and `wasmBinary` are there for when you want to point it at a newer build, and `storageDir` moves its engine’s working directory from the system’s default temp directory. It needs `ffmpeg` for its output media; set `ffmpegPath` in the client or `FFMPEG_PATH` in the environment if the binary isn’t in `PATH`.
 
-Those three files belong to WhatsApp Web itself, carried byte for byte. A supply-chain scanner will flag them as obfuscated code and a large binary, so `lib/assets/wasm/README.md` records their checksums, what they can and can’t access, and why they aren’t reformatted; `npm run verify:assets` checks everything again with one command.
+Those three files belong to WhatsApp Web itself, carried byte for byte. A supply-chain scanner will flag them as obfuscated code and a large binary, so `src/assets/wasm/README.md` records their checksums, what they can and can’t access, and why they aren’t reformatted; `npm run verify:assets` checks everything again with one command.
 
 Nothing is written to stdout unless you ask: pass `debug: true` for its built-in tracing, or `logger: (...args) => …` to direct it to your own logger.
 
@@ -5290,7 +5290,7 @@ Its supporting commands:
 
 | Command | Purpose |
 |---|---|
-| `npm run wa:diff -- <lama> <baru>` | compare two bundle snapshots separately |
+| `npm run wa:diff -- <old> <new>` | compare two bundle snapshots separately |
 | `npm run check:proto` | check protobuf holes only |
 | `npm run sync:proto` | add missing protobuf fields to `WAProto` |
 | `npm run verify:proto` | encoder round-trip only |
@@ -5299,12 +5299,12 @@ Its supporting commands:
 | `npm run fetch:bundle -- <dir>` | download the raw bundle |
 | `npm run update:version` | bump the pinned revision without any checks |
 | `npm run audit:apk -- <dir>` | compare `WAProto` with an extracted Android APK |
-| `npm run sync:proto -- --gaps <berkas>` | patch `WAProto` from an audit's `--json` output |
+| `npm run sync:proto -- --gaps <file>` | patch `WAProto` from an audit's `--json` output |
 | `npm run proto:update` | the whole round: sync, verify, bump |
 
 `proto:update` runs `sync:proto`, then `verify:proto`, then `verify:mex`, then `wa:update --apply`, then `update:version`, and that sequence does the heavy lifting. `wa:update` exits with a nonzero code on the `needs-work` conclusion and rejects `--apply`, so closing the protobuf holes must come first or the chain stops before it gets there.
 
-**Checking `w:mex` queries.** Newsletter, username, text status, and both account health signals all go through persisted GraphQL queries — numeric IDs stored in `lib/Types/Mex.js`. If WhatsApp changes an ID, adds a required variable, or renames a root field, the call fails on the server and no test catches it. `verify:mex` reads `params:{id,name}` and `LocalArgument` for every query from the bundle snapshot, then checks them against every `executeWMexQuery` call in `lib/Socket`: IDs no longer served, missing or undeclared variables, and `dataPath` missing from the query response.
+**Checking `w:mex` queries.** Newsletter, username, text status, and both account health signals all go through persisted GraphQL queries — numeric IDs stored in `src/Types/Mex.js`. If WhatsApp changes an ID, adds a required variable, or renames a root field, the call fails on the server and no test catches it. `verify:mex` reads `params:{id,name}` and `LocalArgument` for every query from the bundle snapshot, then checks them against every `executeWMexQuery` call in `src/Socket`: IDs no longer served, missing or undeclared variables, and `dataPath` missing from the query response.
 
 ```bash
 npm run verify:mex
@@ -5319,7 +5319,7 @@ Without `PROTO_BUNDLE_DIR`, it uses the highest-revision snapshot in `.wa-bundle
 npm run audit:apk -- /path/to/extracted-apk
 ```
 
-Add `--json <berkas>` and it writes the holes in the form consumed by `sync:proto`, so the same code generator that patches from a Web bundle can patch from an APK:
+Add `--json <file>` and it writes the holes in the form consumed by `sync:proto`, so the same code generator that patches from a Web bundle can patch from an APK:
 
 ```
 npm run audit:apk -- /path/to/extracted-apk /dev/null --json gaps.json
@@ -5444,7 +5444,7 @@ A key consists of four fields, and identifies one message anywhere in the accoun
   remoteJid: 'status@broadcast',        // the chat it lives in
   fromMe: false,                        // whether this account sent it
   id: '3EB03AC13066A48D44FF59',         // id pesannya
-  participant: '628000@s.whatsapp.net'  // who sent it, in a group or in a status
+  participant: '918000@s.whatsapp.net'  // who sent it, in a group or in a status
 }
 ```
 
@@ -5455,7 +5455,7 @@ A key consists of four fields, and identifies one message anywhere in the accoun
 
 ```js
 const myStatus = await sock.sendMessage('status@broadcast', {
-  image: { url: './foto.jpg' },
+  image: { url: './photo.jpg' },
   caption: 'hello everyone'
 }, { statusJidList })
 
@@ -5483,7 +5483,7 @@ sock.ev.on('messages.upsert', async ({ messages }) => {
     if (m.key.remoteJid !== 'status@broadcast') continue
 
     console.log(m.key)
-    // { remoteJid: 'status@broadcast', fromMe: false, id: '…', participant: '628000@s.whatsapp.net' }
+    // { remoteJid: 'status@broadcast', fromMe: false, id: '…', participant: '918000@s.whatsapp.net' }
   }
 })
 ```
@@ -5503,9 +5503,9 @@ sock.ev.on('messages.upsert', ({ messages }) => {
   }
 })
 
-// …nanti
+// …later
 await sock.sendMessage('status@broadcast', {
-  text: 'ikutan!',
+  text: 'join in!',
   addYours: prompts.get(chosenId)
 }, { statusJidList })
 ```
@@ -5622,8 +5622,8 @@ await sock.sendMessage('123456789@newsletter', {
   questionReply: {
     text: 'Good choice, here\'s what to work on next',
     serverQuestionId: 175,
-    quotedQuestion: questionMessage.message,   // opsional
-    quotedResponse: responseMessage.message    // opsional
+    quotedQuestion: questionMessage.message,   // optional
+    quotedResponse: responseMessage.message    // optional
   }
 })
 ```
@@ -5715,14 +5715,14 @@ await sock.sendMessage(userJid, {
 <a id="audiens-status-kustom-teman-dekat"></a>
 ### Custom Status Audience (Close Friends)
 
-This is a status that displays a badge containing an emoji and a list name, and opens a dialog that says **"You are in the custom audience {nama}"**. You choose the emoji and name, and that’s where the “custom emoji” part comes from.
+This is a status that displays a badge containing an emoji and a list name, and opens a dialog that says **"You are in the custom audience {name}"**. You choose the emoji and name, and that’s where the “custom emoji” part comes from.
 
 This is **not** `groupStatusMessageV2`. Two different features are often confused here, so before the code:
 
 | | Field | What viewers see |
 | --- | --- | --- |
 | **Custom audience** | `contextInfo.statusAudienceMetadata` | a purple ring around the status, a badge containing an emoji and your list name, and a “custom audience” dialog |
-| **Group status** | wrapper `groupStatusMessageV2` + `contextInfo.isGroupStatus` | "Added by {nama}" below the poster’s name |
+| **Group status** | wrapper `groupStatusMessageV2` + `contextInfo.isGroupStatus` | "Added by {name}" below the poster’s name |
 
 They are independent. A single status can be one, the other, or both.
 
@@ -5745,8 +5745,8 @@ A plain string is a shorthand for the list name:
 
 ```js
 await sock.sendMessage('status@broadcast', {
-  image: { url: './foto.jpg' },
-  caption: 'buat kalian aja',
+  image: { url: './photo.jpg' },
+  caption: 'just for you',
   statusAudience: 'Besties'
 }, { statusJidList: bestiesJids })
 ```
@@ -5890,7 +5890,7 @@ And if the payload is correct but the phone still shows the default, that’s th
 
 ```js
 await sock.sendMessage('status@broadcast', {
-  text: 'ikutan!',
+  text: 'join in!',
   addYours: promptStatus.key
 }, { statusJidList })
 ```
@@ -5904,10 +5904,10 @@ It writes `messageContextInfo.messageAssociation` (tag 10) with `associationType
   "messageContextInfo": {
     "messageAssociation": {
       "associationType": 8,
-      "parentMessageKey": { "remoteJid": "status@broadcast", "id": "ABC123", "participant": "628000@s.whatsapp.net" }
+      "parentMessageKey": { "remoteJid": "status@broadcast", "id": "ABC123", "participant": "918000@s.whatsapp.net" }
     }
   },
-  "extendedTextMessage": { "text": "ikutan!" }
+  "extendedTextMessage": { "text": "join in!" }
 }
 ```
 
@@ -5915,8 +5915,8 @@ This works with any status content, including media, because the association sit
 
 ```js
 await sock.sendMessage('status@broadcast', {
-  image: { url: './jawaban.jpg' },
-  caption: 'ikutan!',
+  image: { url: './answer.jpg' },
+  caption: 'join in!',
   addYours: promptStatus.key
 }, { statusJidList })
 ```
@@ -5931,7 +5931,7 @@ There are three Add Yours flavors, and you can call whichever one you want:
 
 ```js
 await sock.sendMessage('status@broadcast', {
-  text: 'ikutan!',
+  text: 'join in!',
   addYours: { key: promptStatus.key, type: 'STATUS_ADD_YOURS_AI_IMAGINE' }
 }, { statusJidList })
 ```
@@ -5945,7 +5945,7 @@ await sock.sendMessage('status@broadcast', {
 import { AssociationType } from '@whiskeysockets/baileys'
 
 await sock.sendMessage('status@broadcast', {
-  text: 'jawaban',
+  text: 'answer',
   messageAssociation: {
     type: AssociationType.STATUS_QUESTION,
     parentMessageKey: questionStatus.key,
@@ -5983,8 +5983,8 @@ Mentioning people in a status involves two messages: the status itself is sent t
 
 ```js
 await sock.sendMessage(
-  ['628000@s.whatsapp.net', '120363000000000000@g.us'],
-  { image: { url: './foto.jpg' }, caption: 'hello everyone' },
+  ['918000@s.whatsapp.net', '120363000000000000@g.us'],
+  { image: { url: './photo.jpg' }, caption: 'hello everyone' },
   { delayMs: 1500 }
 )
 ```
@@ -6082,7 +6082,7 @@ const created = await sock.sendMessage(jid, {
   scheduledCall: {
     scheduledTimestampMs: new Date(Date.now() + 3600000),
     callType: 'VIDEO',
-    title: 'Panggilan rabbitxmd'
+    title: 'rabbitxmd Call'
   }
 })
 ```
@@ -6233,9 +6233,9 @@ The full trace looks like this:
 
 ```
 TypeError: Cannot read properties of undefined (reading 'undefined')
-    at generateWAMessageFromContent (.../lib/Utils/messages.js:1443:64)
-    at generateWAMessage (.../lib/Utils/messages.js:1507:12)
-    at async Object.sendMessage (.../lib/Socket/messages-send.js:1300:33)
+    at generateWAMessageFromContent (.../src/Utils/messages.js:1443:64)
+    at generateWAMessage (.../src/Utils/messages.js:1507:12)
+    at async Object.sendMessage (.../src/Socket/messages-send.js:1300:33)
     at async Object.before (.../plugins/system/_firstchat.js:18:9)
 ```
 
@@ -6277,7 +6277,7 @@ Now a device is marked only after its key node is actually present in the stanza
 ```
 WARN  sender key did not reach every device, leaving them unmarked so the next send retries
       jid: "120363000000000000@g.us"
-      skipped: [ "628000:12@s.whatsapp.net" ]
+      skipped: [ "918000:12@s.whatsapp.net" ]
 ```
 
 If a group was already stuck before this fix, clear its memory once, and the next message will redistribute its key to everyone:
@@ -6285,7 +6285,7 @@ If a group was already stuck before this fix, clear its memory once, and the nex
 ```js
 const reset = await sock.resetGroupSenderKey('120363000000000000@g.us')
 console.log(reset)
-// { jid: '120363000000000000@g.us', cleared: 4, devices: [ '628000:12@s.whatsapp.net', … ] }
+// { jid: '120363000000000000@g.us', cleared: 4, devices: [ '918000:12@s.whatsapp.net', … ] }
 
 await sock.sendMessage('120363000000000000@g.us', { text: 'hello' })
 ```
@@ -6322,13 +6322,13 @@ Check what the request throws before assuming the notification is at fault. `req
 |---|---|
 | `rate-overlimit` (`429`) | too many attempts — wait; trying again will only make things worse |
 | `not-allowed` / feature error | phone-number linking is not enabled for that account |
-| `must be in international format` (`400`) | the number is not `<kode negara><nomor nasional>` |
+| `must be in international format` (`400`) | the number is not `<country code><national number>` |
 | `accepted without registering` | the server responded without a pairing ref |
 | `never answered` | no response came at all |
 
 If none of these appear and the code is registered, enter it manually via **WhatsApp → Linked Devices → Link with phone number**. If it is accepted there, the registration is fine and only the push notification failed to arrive, which is determined on the server side.
 
-Verify from outside your bot with `node script/testpairing.js <nomor> --check-only`.
+Verify from outside your bot with `node script/testpairing.js <number> --check-only`.
 
 <a id="permintaan-pairing-ditolak-dengan-409"></a>
 ### Pairing request rejected with 409
