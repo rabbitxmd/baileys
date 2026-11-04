@@ -1,3 +1,4 @@
+/* RabbitXmd Baileys maintained distribution. Upstream notices and license are preserved in LICENSE and NOTICE.md. */
 const major = parseInt(
     process.versions.node.split('.')[0],
     10
