@@ -1,14 +1,14 @@
-# RabbitXmd Baileys
+# rabbitxmd Baileys
 
-**RabbitXmd Baileys** is an ESM-first Node.js library for WhatsApp Web Multi-Device development. It combines the socket and protocol layers, LID-aware addressing, session helpers, message utilities, integrated interactive-message builders, and extensive group, channel, media, status, business, call, and modern message APIs.
+**rabbitxmd Baileys** is an ESM-first Node.js library for WhatsApp Web Multi-Device development. It combines the socket and protocol layers, LID-aware addressing, session helpers, message utilities, integrated interactive-message builders, and extensive group, channel, media, status, business, call, and modern message APIs.
 
-- **Repository:** [github.com/RabbitXmd/baileys](https://github.com/RabbitXmd/baileys)
+- **Repository:** [github.com/rabbitxmd/baileys](https://github.com/rabbitxmd/baileys)
 - **Import compatibility name:** `@whiskeysockets/baileys`
-- **Install this repository:** `npm install github:RabbitXmd/baileys`
+- **Install this repository:** `npm install github:rabbitxmd/baileys`
 - **Runtime:** Node.js 20 or newer; Node.js 22+ is recommended
 
 > [!IMPORTANT]
-> `@whiskeysockets/baileys` is the requested import/package identifier for compatibility with existing code. It does not mean this repository is the official WhiskeySockets distribution, and it does not identify the maintainers of that project. Install the RabbitXmd build from this repository URL shown above; a bare `npm install @whiskeysockets/baileys` may resolve to a different registry package.
+> `@whiskeysockets/baileys` is the requested import/package identifier for compatibility with existing code. It does not mean this repository is the official WhiskeySockets distribution, and it does not identify the maintainers of that project. Install the rabbitxmd build from this repository URL shown above; a bare `npm install @whiskeysockets/baileys` may resolve to a different registry package.
 >
 > This is an unofficial, independently maintained WhatsApp Web client library. It is not affiliated with, authorized, sponsored, or supported by WhatsApp or Meta. Use it responsibly, follow applicable laws and WhatsApp terms, and protect account credentials. WhatsApp can change server behavior at any time.
 
@@ -150,10 +150,10 @@ node -v
 <a id="-pemasangan"></a>
 ## 📦 Installation
 
-Install from the RabbitXmd GitHub repository:
+Install from the rabbitxmd GitHub repository:
 
 ```bash
-npm install github:RabbitXmd/baileys
+npm install github:rabbitxmd/baileys
 ```
 
 <a id="paket-yang-disarankan"></a>
@@ -165,7 +165,7 @@ Install the GitHub repository under the requested compatibility import name:
 {
   "type": "module",
   "dependencies": {
-    "@whiskeysockets/baileys": "github:RabbitXmd/baileys"
+    "@whiskeysockets/baileys": "github:rabbitxmd/baileys"
   }
 }
 ```
@@ -621,7 +621,7 @@ A custom pairing code must contain exactly **8 characters**.
 ```js
 const code = await sock.requestPairingCode(
   '9181234567890',
-  'RABBITXMD01'
+  'RABBIT01'
 )
 
 console.log(code)
@@ -921,7 +921,7 @@ console.log(decoded)
 
 ```js
 await sock.sendMessage(jid, {
-  text: 'Greetings from RabbitXmd 💜'
+  text: 'Greetings from rabbitxmd 💜'
 })
 ```
 
@@ -995,7 +995,7 @@ await sock.sendMessage(jid, {
 ```js
 await sock.sendMessage(jid, {
   image: { url: 'https://example.com/image.jpg' },
-  caption: 'RabbitXmd image'
+  caption: 'rabbitxmd image'
 })
 ```
 
@@ -1005,7 +1005,7 @@ await sock.sendMessage(jid, {
 ```js
 await sock.sendMessage(jid, {
   video: { url: 'https://example.com/video.mp4' },
-  caption: 'Video RabbitXmd'
+  caption: 'Video rabbitxmd'
 })
 ```
 
@@ -1083,8 +1083,8 @@ Every toggle WhatsApp displays in its own poll composer is available here. The o
   poll: {
     name: 'Which one tastes good?',
     values: [
-  { name: 'Nasi Padang', image: { url: global.RabbitXmd } },
-  { name: 'Nasi Goreng', image: { url: global.RabbitXmd } }
+  { name: 'Nasi Padang', image: { url: global.rabbitxmd } },
+  { name: 'Nasi Goreng', image: { url: global.rabbitxmd } }
 ],
     selectableCount: 1,
     hideVoter: true,
@@ -1120,14 +1120,14 @@ In other words, Web only accepts photo polls in channels, so a photo poll that l
 
 ```js
 await sock.sendMessage(jid, {
-  text: 'RabbitXmd Baileys',
+  text: 'rabbitxmd Baileys',
   contextInfo: {
     externalAdReply: {
-      title: 'RabbitXmd Baileys',
+      title: 'rabbitxmd Baileys',
       body: 'Library WhatsApp Multi-Device modern',
       mediaType: 1,
-      thumbnailUrl: 'https://example.com/RabbitXmd.jpg',
-      sourceUrl: 'https://github.com/RabbitXmd/baileys',
+      thumbnailUrl: 'https://example.com/rabbitxmd.jpg',
+      sourceUrl: 'https://github.com/rabbitxmd/baileys',
       renderLargerThumbnail: true,
       showAdAttribution: false
     }
@@ -1141,12 +1141,12 @@ There is also a shorthand form that sits alongside the content, not inside `cont
 
 ```js
 await sock.sendMessage(jid, {
-  text: 'RabbitXmd Baileys',
+  text: 'rabbitxmd Baileys',
   externalAdReply: {
-    title: 'RabbitXmd Baileys',
+    title: 'rabbitxmd Baileys',
     body: 'Library WhatsApp Multi-Device modern',
     thumbnail: await fs.promises.readFile('./cover.jpg'),
-    url: 'https://github.com/RabbitXmd/baileys',
+    url: 'https://github.com/rabbitxmd/baileys',
     largeThumbnail: true
   }
 })
@@ -1386,7 +1386,7 @@ The builder surface consists of 212 names spread across four modules, which is w
 import { MB } from '@whiskeysockets/baileys'
 
 await new MB.Button(sock)
-  .setTitle('RabbitXmd Menu')
+  .setTitle('rabbitxmd Menu')
   .addReply('Ping', 'ping')
   .send(jid)
 
@@ -1519,12 +1519,12 @@ The `Button` builder is used for native-flow interactive messages.
 import { MB } from '@whiskeysockets/baileys'
 
 const message = new MB.Button(sock)
-  .setTitle('RabbitXmd Menu')
+  .setTitle('rabbitxmd Menu')
   .setBody('Choose one below.')
   .setFooter('@whiskeysockets/baileys')
   .addReply('Ping', 'ping')
   .addUrl('Open Website', 'https://example.com')
-  .addCopy('Salin Kode', 'RABBITXMD2026')
+  .addCopy('Copy Code', 'RABBIT2026')
 
 await message.send(jid)
 ```
@@ -1534,10 +1534,10 @@ await message.send(jid)
 
 ```js
 const message = new MB.Button(sock)
-  .setImage('https://example.com/RabbitXmd.jpg')
-  .setTitle('RabbitXmd')
+  .setImage('https://example.com/rabbitxmd.jpg')
+  .setTitle('rabbitxmd')
   .setBody('Interactive message with an image header.')
-  .setFooter('Powered by RabbitXmd Baileys')
+  .setFooter('Powered by rabbitxmd Baileys')
   .addReply('Menu', 'menu')
   .addUrl('Website', 'https://example.com')
 
@@ -1590,9 +1590,9 @@ Create a native single-select list with `addSelection`, `makeSection`, and `make
 
 ```js
 const list = new MB.Button(sock)
-  .setTitle('RabbitXmd Menu')
+  .setTitle('rabbitxmd Menu')
   .setBody('Choose a menu.')
-  .setFooter('RabbitXmd Baileys')
+  .setFooter('rabbitxmd Baileys')
   .addSelection('Open Menu')
   .makeSection('Menu Utama')
   .makeRow('', 'Profil', 'Open profile menu', 'profile')
@@ -1647,11 +1647,11 @@ If you need one menu that works on all platforms, use up to 10 `addReply` button
 import { MB } from '@whiskeysockets/baileys'
 
 const message = new MB.ButtonV2(sock)
-  .setTitle('RabbitXmd')
+  .setTitle('rabbitxmd')
   .setSubtitle('WhatsApp Bot')
   .setBody('Choose an action.')
-  .setFooter('RabbitXmd Baileys')
-  .setThumbnail('https://example.com/RabbitXmd.jpg')
+  .setFooter('rabbitxmd Baileys')
+  .setThumbnail('https://example.com/rabbitxmd.jpg')
   .addButton('Menu', 'menu')
   .addButton('Ping', 'ping')
 
@@ -1683,7 +1683,7 @@ const card2 = await new MB.Button(sock)
 
 const carousel = new MB.Carousel(sock)
   .setBody('Choose one of the cards below.')
-  .setFooter('RabbitXmd Carousel')
+  .setFooter('rabbitxmd Carousel')
   .addCard([card1, card2])
 
 await carousel.send(jid)
@@ -1724,17 +1724,17 @@ A single `send` call sends two stanzas: the message, followed by an edit `protoc
 import { MB } from '@whiskeysockets/baileys'
 
 const rich = new MB.AIRich(sock)
-  .setTitle('RabbitXmd AI')
+  .setTitle('rabbitxmd AI')
   .setFooter('Made with AIRich')
   .addText('Hello! This is a rich response.')
-  .addCode('javascript', `console.log('Hello RabbitXmd')`)
+  .addCode('javascript', `console.log('Hello rabbitxmd')`)
   .addTable([
     ['Fitur', 'Status'],
     ['Button', 'Tersedia'],
     ['Carousel', 'Tersedia'],
     ['AIRich', 'Eksperimental']
   ])
-  .addSuggest(['Lihat menu', 'Help me', 'Tentang RabbitXmd'])
+  .addSuggest(['Lihat menu', 'Help me', 'Tentang rabbitxmd'])
 
 await rich.send(jid)
 ```
@@ -1947,11 +1947,11 @@ Node `<biz>` is the other half, and this library already sends it. If its first 
 Here’s the complete mix via `sendMessage`, with no imports — one button type, still within the limit, so it renders everywhere:
 
 ```js
-const teks = '✨ RabbitXmd MENU\\n\\nChoose a category below.'
+const teks = '✨ rabbitxmd MENU\\n\\nChoose a category below.'
 
 await sock.sendMessage(jid, {
   text: teks,
-  footer: 'RabbitXmd - MultiDevice',
+  footer: 'rabbitxmd - MultiDevice',
   nativeFlow: [
     { text: 'All Menu Items', id: '.allmenu' },
     { text: 'Downloader', id: '.menu downloader' },
@@ -1963,7 +1963,7 @@ await sock.sendMessage(jid, {
     type: 'im_a2ui',
     uuid: crypto.randomUUID(),
     fallback: teks,
-    data: JSON.stringify({ type: 'info_card', title: '✨ MENU RabbitXmd', body: 'Choose a category below.' })
+    data: JSON.stringify({ type: 'info_card', title: '✨ MENU rabbitxmd', body: 'Choose a category below.' })
   }
 })
 ```
@@ -1973,7 +1973,7 @@ Mixing types in a single message is fine for readers on mobile, and it looks lik
 ```js
 await sock.sendMessage(jid, {
   text: 'All types of buttons in one message',
-  footer: 'RabbitXmd - MultiDevice',
+  footer: 'rabbitxmd - MultiDevice',
   nativeFlow: [
     { text: 'Balas', id: '.menu' },
     { text: 'Website', url: 'https://nixel.dev' },
@@ -2019,7 +2019,7 @@ Bloks widgets can also live **inside** the rich response, rather than alongside 
 ```js
 import { MB } from '@whiskeysockets/baileys'
 
-const rich = new MB.AIRich(sock).setTitle('RabbitXmd AI')
+const rich = new MB.AIRich(sock).setTitle('rabbitxmd AI')
 
 rich.addText('*Stats for Today*')
 rich.addSection(MB.bloksSection('im_a2ui', { type: 'info_card', title: 'Penjualan', body: 'Rp 1.250.000' }))
@@ -2045,7 +2045,7 @@ It emits `FOABloksPrimitive`, one of the eighteen names that WA Web also draws �
 ```js
 import { MB } from '@whiskeysockets/baileys'
 
-const rich = new MB.AIRich(sock).setTitle('RabbitXmd AI')
+const rich = new MB.AIRich(sock).setTitle('rabbitxmd AI')
 
 rich.addText('open [Settings](>whatsapp://settings), or see [the site](https://nixel.dev)')
 
@@ -2086,7 +2086,7 @@ Each call to `add*` accepts `id`, `insertAt`, and `replace`, so a message that h
 import { MB } from '@whiskeysockets/baileys'
 
 const rich = new MB.AIRich(sock)
-  .setTitle('RabbitXmd AI')
+  .setTitle('rabbitxmd AI')
   .addText('Sedang dikerjakan…', { id: 'intro' })
 
 await rich.send(jid)
@@ -2121,8 +2121,8 @@ An incorrect target throws typed errors rather than failing silently — `ItemNo
 
 ```js
 const cards = new MB.AIRich(sock)
-  .addProduct({ title: 'RabbitXmd', brand: 'Baileys', product_url: 'https://example.com' })
-  .addPost({ username: 'RabbitXmd', caption: 'Hello', url: 'https://example.com' })
+  .addProduct({ title: 'rabbitxmd', brand: 'Baileys', product_url: 'https://example.com' })
+  .addPost({ username: 'rabbitxmd', caption: 'Hello', url: 'https://example.com' })
   .items
 
 rich.addSection(MB.newLayout('HScroll', cards), { id: 'mixed' })
@@ -2150,7 +2150,7 @@ MessageBuilder covers 11 of the primitives drawn directly by WA Web. The rest ar
 import { MB } from '@whiskeysockets/baileys'
 
 const rich = new MB.AIRich(sock)
-  .setTitle('RabbitXmd AI')
+  .setTitle('rabbitxmd AI')
   .setFooter('Made with AIRich')
 
 rich.addText('*Laporan render*')
@@ -2263,7 +2263,7 @@ The second gap is in `readEmbeddedSections`: it only picks up `content` entries 
 ```js
 import { MB } from '@whiskeysockets/baileys'
 
-const rich = new MB.AIRich(sock).setTitle('RabbitXmd AI')
+const rich = new MB.AIRich(sock).setTitle('rabbitxmd AI')
 
 rich.addSection(MB.mapSection({
   staticMapUrl: 'https://example.com/static-map.png',
@@ -2340,7 +2340,7 @@ await rich.send(jid)
 ```js
 import { MB } from '@whiskeysockets/baileys'
 
-const rich = new MB.AIRich(sock).setTitle('RabbitXmd AI')
+const rich = new MB.AIRich(sock).setTitle('rabbitxmd AI')
 
 rich.addText('*Places to eat near you*')
 rich.addMap([
@@ -2358,7 +2358,7 @@ This item is a node carried by a layout, not a standalone section, so build it f
 ```js
 import { MB } from '@whiskeysockets/baileys'
 
-const rich = new MB.AIRich(sock).setTitle('RabbitXmd AI')
+const rich = new MB.AIRich(sock).setTitle('rabbitxmd AI')
 
 rich.addSection(MB.mediaGridSection([
   MB.mediaItem({ previewUrl: 'https://example.com/1-small.jpg', fullUrl: 'https://example.com/1.jpg' }),
@@ -2393,7 +2393,7 @@ Two layouts join the eight already supported: `multipleResponseSection(responses
 ```js
 import { MB } from '@whiskeysockets/baileys'
 
-const rich = new MB.AIRich(sock).setTitle('RabbitXmd AI')
+const rich = new MB.AIRich(sock).setTitle('rabbitxmd AI')
 
 rich.addSection(MB.quotaUpsellSection({
   title: 'Meta AI Plus',
@@ -2435,7 +2435,7 @@ For anything not modeled here, `customSection` sends the node directly — the c
 ```js
 import { MB } from '@whiskeysockets/baileys'
 
-const rich = new MB.AIRich(sock).setTitle('RabbitXmd AI')
+const rich = new MB.AIRich(sock).setTitle('rabbitxmd AI')
 
 rich.addSection(MB.customSection('GenAISourcedItem', { sourced_item_type: 'THREADS_POST' }))
 rich.addSection(MB.customSection('GenAITopicLinkItem', { title: 'Bali' }, { layout: 'HScroll' }))
@@ -2546,7 +2546,7 @@ It opens view-once and other wrappers first, so a card inside `viewOnceMessageV2
 > [!WARNING]
 > **No A2UI wrapper can be rendered by an ordinary account, and that is not a payload bug.** I tested both directly: `sendA2UI` (bloksWidget) only displays `fallback` as text, and `sendA2UIBloks` (richResponse/`FOABloksPrimitive`) produces an empty bubble. The cause is in the client, not the message:
 >
-> **(1) `bloksWidget` (`sendA2UI`).** `WAWebInteractiveBloksWidget.react` calculates `O = isA2UIWidget && !isBizBot1pMessage && im_a2ui_require_bot_attribution`. The `im_a2ui_require_bot_attribution` prop defaults to **true** (`WAWebABPropsConfigs`: `[34324,"bool",!1,!0]`; `getABPropConfigValue` returns the 3rd element as the default). When `O` is true, the client draws only `fallback`. `isBizBot1pMessage` comes from `WAWebMsgGetters.getBizBotType(...) === BIZ_1P`, which is protobuf field `WebMessageInfo.is1PBizBotMessage` number 56 — and that is **part of the `oneof` `WebMessageInfo`**, set by the **server** when the message arrives; the send path also explicitly drops it (`parseWebMessageInfo({ ...t, is1PBizBotMessage: void 0 })`). The sender cannot set it through `proto.Message`. That is why only `[3/10] null: Menu RabbitXmd` + fallback appears.
+> **(1) `bloksWidget` (`sendA2UI`).** `WAWebInteractiveBloksWidget.react` calculates `O = isA2UIWidget && !isBizBot1pMessage && im_a2ui_require_bot_attribution`. The `im_a2ui_require_bot_attribution` prop defaults to **true** (`WAWebABPropsConfigs`: `[34324,"bool",!1,!0]`; `getABPropConfigValue` returns the 3rd element as the default). When `O` is true, the client draws only `fallback`. `isBizBot1pMessage` comes from `WAWebMsgGetters.getBizBotType(...) === BIZ_1P`, which is protobuf field `WebMessageInfo.is1PBizBotMessage` number 56 — and that is **part of the `oneof` `WebMessageInfo`**, set by the **server** when the message arrives; the send path also explicitly drops it (`parseWebMessageInfo({ ...t, is1PBizBotMessage: void 0 })`). The sender cannot set it through `proto.Message`. That is why only `[3/10] null: Menu rabbitxmd` + fallback appears.
 >
 > **(2) `richResponse`/`FOABloksPrimitive` (`sendA2UIBloks`).** `cometComposedTextV2FoABloksPrimitiveParser` only calls `buildFoABloksNode` if `renderers.foABloksNodeRenderer` is present; otherwise, it builds an **"unsupported"** node that draws nothing (blank). That renderer is populated only if `isFoABloksNodeRendererEnabled()` — namely `gkx("6940")`, a gatekeeper **not present in the gkx table** snapshot — is true. Further in, `foABloksNodeRenderer` renders with `<WAWebBloksEntryPointLoadable componentType="im_a2ui" componentData=… />`, and `WAWebBloksEntryPointLoadable` loads the Bloks module **from Meta** (`JSResourceForInteraction("WAWebBloksEntryPoint.react").load()`). So the card is drawn by a server-provided Bloks app named `im_a2ui`, not by the message.
 >
@@ -2585,7 +2585,7 @@ There are two forms of A2UI, and the distinction matters:
 await MB.sendA2UIBloks(sock, jid, [
     MB.a2uiColumn('root', ['img', 't1']),
     MB.a2uiImage('img', 'https://files.catbox.moe/5hojci.jpg'),
-    MB.a2uiText('t1', 'RabbitXmd Bot')
+    MB.a2uiText('t1', 'rabbitxmd Bot')
 ], { uuid: crypto.randomUUID() })
 ```
 
@@ -2597,8 +2597,8 @@ Because Android only draws `info_card` and `list_card`, use those elements for t
 await MB.sendA2UI(sock, jid, [], {
     type: 'im_a2ui',
     uuid: crypto.randomUUID(),
-    fallback: '✨ RabbitXmd MENU\\nChoose a category below.',
-    data: MB.a2uiInfoCard({ title: '✨ MENU RabbitXmd', body: 'Choose a category below.' })
+    fallback: '✨ rabbitxmd MENU\\nChoose a category below.',
+    data: MB.a2uiInfoCard({ title: '✨ MENU rabbitxmd', body: 'Choose a category below.' })
 })
 ```
 
@@ -3632,7 +3632,7 @@ To add a custom audience badge to either one, see [Custom Status Audiences](#aud
 
 ```js
 const newsletter = await sock.newsletterCreate(
-  'RabbitXmd Updates',
+  'rabbitxmd Updates',
   'Channel update resmi'
 )
 
@@ -3645,7 +3645,7 @@ console.log(newsletter)
 ```js
 await sock.newsletterUpdateName(
   '123456789@newsletter',
-  'RabbitXmd News'
+  'rabbitxmd News'
 )
 ```
 
@@ -3655,7 +3655,7 @@ await sock.newsletterUpdateName(
 ```js
 await sock.newsletterUpdateDescription(
   '123456789@newsletter',
-  'The latest news from RabbitXmd'
+  'The latest news from rabbitxmd'
 )
 ```
 
@@ -4002,12 +4002,12 @@ const updates = await sock.getNewsletterStatusUpdates('123456789@newsletter', {
 <a id="atribusi-status-channel"></a>
 #### Channel Status Attribution
 
-RabbitXmd Baileys opens `StatusAttribution.Type.NEWSLETTER_STATUS` with the existing channel redistribution metadata in WAProto.
+rabbitxmd Baileys opens `StatusAttribution.Type.NEWSLETTER_STATUS` with the existing channel redistribution metadata in WAProto.
 
 ```js
 await sock.sendMessage('status@broadcast', {
   image: { url: 'https://example.com/status.jpg' },
-  caption: 'Shared from RabbitXmd Updates',
+  caption: 'Shared from rabbitxmd Updates',
   newsletterStatus: {
     newsletterJid: '123456789@newsletter',
     messageId: 42,
@@ -4183,7 +4183,7 @@ const list = await sock.newsletterDirectoryList({
   limit: 20
 })
 
-const found = await sock.newsletterDirectorySearch('RabbitXmd', { limit: 20 })
+const found = await sock.newsletterDirectorySearch('rabbitxmd', { limit: 20 })
 const preview = await sock.newsletterDirectoryCategories({ categories: ['NEWS'], countryCode: 'ID' })
 ```
 
@@ -4242,9 +4242,9 @@ WhatsApp Web moved usernames and Info text to MEX queries. This calls the same p
 
 ```js
 const current = await sock.getUsername()
-console.log(current) // { username: 'RabbitXmd', state: 'ACTIVE', pin: '1234' }
+console.log(current) // { username: 'rabbitxmd', state: 'ACTIVE', pin: '1234' }
 
-await sock.setUsername('RabbitXmd')
+await sock.setUsername('rabbitxmd')
 await sock.setUsernamePin('1234')
 await sock.removeUsernamePin()
 await sock.removeUsername()
@@ -4253,7 +4253,7 @@ await sock.removeUsername()
 Check a name before claiming it:
 
 ```js
-const { available, suggestions } = await sock.checkUsernameAvailability('RabbitXmd')
+const { available, suggestions } = await sock.checkUsernameAvailability('rabbitxmd')
 ```
 
 `setUsername` produces `true` only if the server responds with `SUCCESS`. `state` is either `ACTIVE` or `RESERVED`; provide `{ reserved: true }` when claiming a reserved name.
@@ -4286,7 +4286,7 @@ isUsernamePin('1234')              // true
 displayUsername('rexx')            // '@rexx'
 ```
 
-`@` at the beginning is stripped for you, so `setUsername('@RabbitXmd')` and `setUsername('RabbitXmd')` are the same call.
+`@` at the beginning is stripped for you, so `setUsername('@rabbitxmd')` and `setUsername('rabbitxmd')` are the same call.
 
 <a id="info--status-teks"></a>
 <a id="info-status-teks"></a>
@@ -4360,7 +4360,7 @@ const preview = await sock.fetchServerLinkPreview('https://example.com')
 
 ```js
 const group = await sock.groupCreate(
-  'RabbitXmd Community',
+  'rabbitxmd Community',
   [
     '9181234567890@s.whatsapp.net',
     '9189876543210@s.whatsapp.net'
@@ -4407,7 +4407,7 @@ await sock.groupParticipantsUpdate(groupJid, [userJid], 'demote')
 ```js
 await sock.groupUpdateDescription(
   groupJid,
-  'Welcome to the RabbitXmd Community 💜'
+  'Welcome to the rabbitxmd Community 💜'
 )
 ```
 
@@ -4507,7 +4507,7 @@ A community is a parent that owns groups. Each method mirrors its group counterp
 ### Creating and Linking
 
 ```js
-const community = await sock.communityCreate('RabbitXmd Community', 'What this community is for')
+const community = await sock.communityCreate('rabbitxmd Community', 'What this community is for')
 
 const group = await sock.communityCreateGroup('Pengumuman', [userJid], community.id)
 
@@ -4755,12 +4755,12 @@ for (const entry of results) {
 `onWhatsApp` only accepts phone numbers. To resolve **`@username` → JID** (start a chat via username), use `onWhatsAppUsername`:
 
 ```js
-const found = await sock.onWhatsAppUsername('@RabbitXmd', 'namalain')
+const found = await sock.onWhatsAppUsername('@rabbitxmd', 'namalain')
 for (const entry of found) {
   console.log(entry.jid, entry.exists)
 }
 
-const withPin = await sock.onWhatsAppUsername({ username: 'RabbitXmd', pin: '1234' })
+const withPin = await sock.onWhatsAppUsername({ username: 'rabbitxmd', pin: '1234' })
 ```
 
 Accept one or many usernames at once: plain strings, or an `{ username, pin }` object if the username is PIN-protected. Returns `[{ jid, exists }]` — `jid` is the JID resolved by the server. Under the hood, this is a USync query using protocol `contact` with the `username`/`pin` attributes (the same node shape used by the official client), and the JID is read from the `jid` reply node.
@@ -4793,7 +4793,7 @@ await sock.chatModify({ markRead: false, lastMessages: [msg] }, jid)
 await sock.chatModify({ star: { messages: [{ id: msg.key.id, fromMe: msg.key.fromMe }], star: true } }, jid)
 await sock.chatModify({ clear: true, lastMessages: [msg] }, jid)
 await sock.chatModify({ delete: true, lastMessages: [msg] }, jid)
-await sock.chatModify({ contact: { fullName: 'RabbitXmd' } }, jid)
+await sock.chatModify({ contact: { fullName: 'rabbitxmd' } }, jid)
 ```
 
 `mute` is the duration in milliseconds, and `null` cancels the mute. Some of them require `lastMessages` — the server uses it to place the change on its chat timeline, and throws an error without it.
@@ -4835,7 +4835,7 @@ await sock.removeMessageLabel(jid, messageId, labelId)
 
 ```js
 const profile = await sock.getBusinessProfile(jid)
-await sock.updateBusinessProfile({ description: 'RabbitXmd Store', address: 'Jakarta', email: 'hello@example.com' })
+await sock.updateBusinessProfile({ description: 'rabbitxmd Store', address: 'Jakarta', email: 'hello@example.com' })
 
 const catalog = await sock.getCatalog({ jid, limit: 10 })
 const collections = await sock.getCollections(jid, 51)
@@ -4849,7 +4849,7 @@ const order = await sock.getOrderDetails(orderId, tokenBase64)
 
 ```js
 const created = await sock.productCreate({
-  name: 'Paket Stiker RabbitXmd',
+  name: 'Paket Stiker rabbitxmd',
   description: 'A sticker pack',
   price: 15000,
   currency: 'IDR',
@@ -4865,11 +4865,11 @@ await sock.productDelete([created.id])
 ### Profile and Quick Replies
 
 ```js
-await sock.updateProfileName('RabbitXmd')
+await sock.updateProfileName('rabbitxmd')
 await sock.updateCoverPhoto(buffer)
 await sock.addOrEditQuickReply({ shortcut: 'hi', message: 'Hello!', keywords: ['hello'] })
 
-await sock.addOrEditContact(jid, { fullName: 'RabbitXmd' })
+await sock.addOrEditContact(jid, { fullName: 'rabbitxmd' })
 await sock.removeContact(jid)
 ```
 
@@ -5422,7 +5422,7 @@ The reveal key uses AES-256-GCM, 32 bytes, with a 12-byte IV and the tag appende
 <a id="readme-section-41"></a>
 <a id="-api-pesan-whatsapp-modern"></a>
 ## 🧪 Modern WhatsApp Message API
-RabbitXmd Baileys exposes helpers for newer protobuf message types already present in the bundled WAProto. This API is experimental because WhatsApp may gate server rendering or acceptance per account, per platform, or per rollout.
+rabbitxmd Baileys exposes helpers for newer protobuf message types already present in the bundled WAProto. This API is experimental because WhatsApp may gate server rendering or acceptance per account, per platform, or per rollout.
 
 ```js
 import {
@@ -5635,7 +5635,7 @@ await sock.sendMessage('123456789@newsletter', {
 await sock.sendMessage(jid, {
   statusQuestionAnswer: {
     key: statusQuestion.key,
-    text: 'RabbitXmd Baileys'
+    text: 'rabbitxmd Baileys'
   }
 })
 ```
@@ -5690,7 +5690,7 @@ await sock.sendMessage(jid, {
 await sock.sendMessage(userJid, {
   newsletterAdminInvite: {
     newsletterJid: '123456789@newsletter',
-    newsletterName: 'RabbitXmd Updates',
+    newsletterName: 'rabbitxmd Updates',
     caption: 'Join as admin',
     inviteExpiration: Math.floor(Date.now() / 1000) + 86400
   }
@@ -5706,7 +5706,7 @@ await sock.sendMessage(userJid, {
 await sock.sendMessage(userJid, {
   newsletterFollowerInvite: {
     newsletterJid: '123456789@newsletter',
-    newsletterName: 'RabbitXmd Updates',
+    newsletterName: 'rabbitxmd Updates',
     caption: 'Follow this channel'
   }
 })
@@ -6065,8 +6065,8 @@ await sock.sendMessage(jid, {
 ```js
 await sock.sendMessage(jid, {
   eventInvite: {
-    eventId: 'RabbitXmd-event-001',
-    eventTitle: 'Acara Komunitas RabbitXmd',
+    eventId: 'rabbitxmd-event-001',
+    eventTitle: 'Acara Komunitas rabbitxmd',
     startTime: new Date(Date.now() + 3600000),
     endTime: new Date(Date.now() + 7200000),
     caption: 'Sampai jumpa di sana'
@@ -6082,7 +6082,7 @@ const created = await sock.sendMessage(jid, {
   scheduledCall: {
     scheduledTimestampMs: new Date(Date.now() + 3600000),
     callType: 'VIDEO',
-    title: 'Panggilan RabbitXmd'
+    title: 'Panggilan rabbitxmd'
   }
 })
 ```
@@ -6101,7 +6101,7 @@ await sock.sendMessage(jid, {
 <a id="penanda-broadcast-lokasi"></a>
 ### Location Broadcast Marker
 
-WhatsApp Desktop recognizes `location@broadcast` separately from `status@broadcast`. RabbitXmd Baileys exposes the marker and its detector without treating it as ordinary status fanout.
+WhatsApp Desktop recognizes `location@broadcast` separately from `status@broadcast`. rabbitxmd Baileys exposes the marker and its detector without treating it as ordinary status fanout.
 
 ```js
 console.log(LOCATION_BROADCAST_JID)
@@ -6136,7 +6136,7 @@ import {
 This helper returns protobuf-compatible message content that can be passed to `generateWAMessageFromContent` or to your own relay logic.
 
 > [!IMPORTANT]
-> The WhatsApp Desktop build that was inspected also exposed schema names related to bot history sharing and identity verification. Both have deliberately not been added until their protobuf field numbers, parent messages, and wire layouts are confirmed. RabbitXmd Baileys does not guess protobuf tags.
+> The WhatsApp Desktop build that was inspected also exposed schema names related to bot history sharing and identity verification. Both have deliberately not been added until their protobuf field numbers, parent messages, and wire layouts are confirmed. rabbitxmd Baileys does not guess protobuf tags.
 
 ---
 
@@ -6308,7 +6308,7 @@ Before blaming the sender key, rule out the two cheaper causes first:
 When using a custom pairing code:
 
 ```js
-await sock.requestPairingCode(phone, 'RABBITXMD01')
+await sock.requestPairingCode(phone, 'RABBIT01')
 ```
 
 The custom value must contain exactly eight characters.
@@ -6373,4 +6373,4 @@ If WhatsApp returns `DisconnectReason.loggedOut`, delete the invalid local sessi
 <a id="license-and-attribution"></a>
 ## License and attribution
 
-Review the repository's [`LICENSE`](./LICENSE), [`NOTICE.md`](./NOTICE.md), and [`EXPERIMENTAL.md`](./EXPERIMENTAL.md) before redistribution or production use. Required third-party copyright and license notices are preserved in the repository. This RabbitXmd project is independently maintained; it is not the official distribution of the compatibility-named package namespace.
+Review the repository's [`LICENSE`](./LICENSE), [`NOTICE.md`](./NOTICE.md), and [`EXPERIMENTAL.md`](./EXPERIMENTAL.md) before redistribution or production use. Required third-party copyright and license notices are preserved in the repository. This rabbitxmd project is independently maintained; it is not the official distribution of the compatibility-named package namespace.
