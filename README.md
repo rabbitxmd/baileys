@@ -556,7 +556,7 @@ From that point, `store.chats`, `store.contacts`, `store.messages`, and `store.g
 A pairing code can be requested after the socket is created.
 
 ```js
-const phoneNumber = '6281234567890'
+const phoneNumber = '9181234567890'
 
 if (!state.creds.registered) {
   const code = await sock.requestPairingCode(phoneNumber)
@@ -564,7 +564,7 @@ if (!state.creds.registered) {
 }
 ```
 
-Numbers are normalized before use, so `+62 812-3456-7890` and `6281234567890` are the same request. Numbers that cannot possibly be valid are rejected: fewer than 6 or more than 15 digits, or starting with `0` — country codes never start with zero, so `081234567890` is a local format, not the international format WhatsApp expects.
+Numbers are normalized before use, so `+62 812-3456-7890` and `9181234567890` are the same request. Numbers that cannot possibly be valid are rejected: fewer than 6 or more than 15 digits, or starting with `0` — country codes never start with zero, so `081234567890` is a local format, not the international format WhatsApp expects.
 
 ```js
 await sock.requestPairingCode('081234567890')
@@ -582,8 +582,8 @@ try {
   const code = await sock.requestPairingCode(phoneNumber)
   console.log('Kode pairing:', code)
 } catch (error) {
-  console.log(error.message)   // misalnya rate-overlimit, not-allowed
-  console.log(error.data)      // misalnya 429
+  console.log(error.message)   // e.g. rate-overlimit, not-allowed
+  console.log(error.data)      // e.g. 429
 }
 ```
 
@@ -620,7 +620,7 @@ A custom pairing code must contain exactly **8 characters**.
 
 ```js
 const code = await sock.requestPairingCode(
-  '6281234567890',
+  '9181234567890',
   'RABBITXMD01'
 )
 
@@ -633,7 +633,7 @@ console.log(code)
 `script/testpairing.js` runs a single pairing request in a disposable session directory, so credentials for an already-connected bot are never overwritten:
 
 ```bash
-node script/testpairing.js 6281234567890 --check-only
+node script/testpairing.js 9181234567890 --check-only
 ```
 
 `--check-only` reports whether the server accepted its registration and never prints its code — use it anywhere the output can be read by others. Remove the flag to print the code and wait for linking to complete.
@@ -876,7 +876,7 @@ New versions of the WhatsApp protocol can identify users with LID addresses, not
 Common forms include:
 
 ```text
-6281234567890@s.whatsapp.net
+9181234567890@s.whatsapp.net
 123456789012345@lid
 120363xxxxxxxxxx@g.us
 123456789@newsletter
@@ -945,8 +945,8 @@ await sock.sendMessage(jid, {
 
 ```js
 await sock.sendMessage(jid, {
-  text: 'Hello @628123456789',
-  mentions: ['628123456789@s.whatsapp.net']
+  text: 'Hello @918123456789',
+  mentions: ['918123456789@s.whatsapp.net']
 })
 ```
 
@@ -961,7 +961,7 @@ await sock.sendMessage(jid, {
 })
 ```
 
-Wire result: `text` becomes `Cek grup ini @120363XXXXXXXXXXXX@g.us`, and the recipient sees a clickable `Cek grup ini @Nama Grup`. Notes:
+Wire result: `text` becomes `Check out this group @120363XXXXXXXXXXXX@g.us`, and the recipient sees a clickable `Check out this group @Group Name`. Notes:
 
 - `groupJid` is normalized automatically; you can enter a full JID (`...@g.us`) or just the number.
 - If you have already placed the `@<groupJid>@g.us` token in the text yourself, it will not be duplicated.
@@ -1248,7 +1248,7 @@ if (d != null) {
   n.thumbnail = decodeBytes(d.thumbnail), n.thumbnailUrl = d.thumbnailUrl
   n.mediaType = d.mediaType, n.mediaUrl = d.mediaUrl
   n.isSuspiciousLink = findLink(d.sourceUrl).suspiciousCharacters.size > 0
-  // lalu sourceApp, dan greetingMessageBody / automatedGreetingMessageShown / ctaPayload
+  // then sourceApp, and greetingMessageBody / automatedGreetingMessageShown / ctaPayload
   // only if isWamoAGMIntegrationEnabled(d.sourceApp)
 }
 ```
@@ -1303,7 +1303,7 @@ A card WhatsApp renders itself for a link. Its large image, title, and subtitle 
 ```js
 await sock.sendMessage(jid, {
   richLink: {
-    text: 'dengerin ini',
+    text: 'listen to this',
     url: 'https://example.com/track',
     title: 'Judul Lagu',
     description: 'Penyanyi',
@@ -1475,7 +1475,7 @@ This is an ordinary message sent by your own account, appearing under your own n
 
 ```js
 await sock.sendMessage('status@broadcast', {
-  text: 'baca ini https://example.com/artikel',
+  text: 'read this https://example.com/article',
   statusLinkPreview: { style: 1 }
 })
 ```
@@ -1598,7 +1598,7 @@ const list = new MB.Button(sock)
   .makeRow('', 'Profil', 'Open profile menu', 'profile')
   .makeRow('', 'Pengaturan', 'Open settings menu', 'settings')
   .makeSection('More')
-  .makeRow('', 'Tentang', 'Tentang bot ini', 'about')
+  .makeRow('', 'About', 'About this bot', 'about')
 
 await list.send(jid)
 ```
@@ -1779,7 +1779,7 @@ The fix: **don’t send any proof at all.** Without proof, the status is `UNKNOW
 
 ```js
 const msg = await rich.send(jid)                          // auto: proof dihilangkan
-msg.aiVerification   // 'omitted'     = tanpa proof, status UNKNOWN (bawaan)
+msg.aiVerification   // 'omitted'     = without proof, status UNKNOWN (default)
                      // 'placeholder' = proof palsu, status FAILED (opt-in)
                      // 'preserved'   = tanda tangan Meta asli, status VALID
 ```
@@ -1881,7 +1881,7 @@ getBizNativeFlowName = ({ interactiveMessage: m }) => {
   if (e.buttonsMessage?.buttons?.length === 1) return …          // buttonsMessage lama
   const f = !(p?.length) && (body.text || header.title || footer.text || header.imageMessage) && !m?.shopStorefrontMessage
   if (f) return MIXED                                            // ← only if there is NO button
-  // selain itu: undefined
+  // otherwise: undefined
 }
 ```
 
@@ -1977,7 +1977,7 @@ await sock.sendMessage(jid, {
   nativeFlow: [
     { text: 'Balas', id: '.menu' },
     { text: 'Website', url: 'https://nixel.dev' },
-    { text: 'Telepon', call: '+628000000000' },
+    { text: 'Telepon', call: '+918000000000' },
     { name: 'send_location', buttonParamsJson: '' },
     { text: 'Choose', sections: [{ title: 'Kategori', rows: [{ title: 'Downloader', id: '.menu downloader' }] }] }
   ]
@@ -2021,7 +2021,7 @@ import { MB } from '@whiskeysockets/baileys'
 
 const rich = new MB.AIRich(sock).setTitle('RabbitXmd AI')
 
-rich.addText('*Statistik hari ini*')
+rich.addText('*Stats for Today*')
 rich.addSection(MB.bloksSection('im_a2ui', { type: 'info_card', title: 'Penjualan', body: 'Rp 1.250.000' }))
 
 await rich.send(jid)
@@ -2047,7 +2047,7 @@ import { MB } from '@whiskeysockets/baileys'
 
 const rich = new MB.AIRich(sock).setTitle('RabbitXmd AI')
 
-rich.addText('buka [Setelan](>whatsapp://settings), atau lihat [situsnya](https://nixel.dev)')
+rich.addText('open [Settings](>whatsapp://settings), or see [the site](https://nixel.dev)')
 
 await rich.send(jid)
 ```
@@ -2105,7 +2105,7 @@ Item bookkeeping:
 ```js
 rich.getIds()          // [ 'intro', 'pic' ]
 rich.hasId('pic')      // true
-rich.peek('pic')       // node di balik id itu
+rich.peek('pic')       // the node behind that id
 rich.assignId(0, 'first')  // give a name to an item that doesn't have an id yet
 rich.delete('pic')
 ```
@@ -2293,7 +2293,7 @@ rich.addSection(MB.sportsSection({
 
 rich.addSection(MB.actionListSection([
   MB.actionListRow({ title: 'Open map', url: 'https://maps.example.com' }),
-  MB.actionListRow({ title: 'Telepon', action: 'tel:+62800000000' })
+  MB.actionListRow({ title: 'Telepon', action: 'tel:+91800000000' })
 ]))
 
 rich.addSection(MB.searchPlannerSection({
@@ -2747,7 +2747,7 @@ import { MB } from '@whiskeysockets/baileys'
 
 const rich = new MB.AIRich(sock)
 rich.setTitle('Dashboard')
-rich.addText('Penjualan hari ini')
+rich.addText('Sales for Today')
 rich.addSection(MB.dividerSection())
 rich.addSection(MB.htmlSection(chartHtml, { trustedSources: ['nixel.dev'] }), { id: 'chart' })
 await rich.send(m.chat)
@@ -3174,11 +3174,11 @@ import { MB } from '@whiskeysockets/baileys'
 
 const info = MB.decodeAIRich(m.message)
 
-info.embeddedScreens   // layar mentahnya, persis seperti saat tiba
+info.embeddedScreens   // the raw screens, exactly as they arrived
 info.embeddedTabs      // all tabs, flattened, from any nesting structure
 info.embeddedSections  // all sections within those screens
 
-// atau per layar
+// or per screen
 MB.readEmbeddedTabs(info.embeddedScreens[0])
 MB.readEmbeddedSections(info.embeddedScreens[0])
 
@@ -4146,8 +4146,8 @@ Setting your own admin name or photo is **not possible from any client API**. Wh
 #### Admin Invitations
 
 ```js
-await sock.newsletterCreateAdminInvite('123456789@newsletter', '6281234567890@s.whatsapp.net')
-await sock.newsletterRevokeAdminInvite('123456789@newsletter', '6281234567890@s.whatsapp.net')
+await sock.newsletterCreateAdminInvite('123456789@newsletter', '9181234567890@s.whatsapp.net')
+await sock.newsletterRevokeAdminInvite('123456789@newsletter', '9181234567890@s.whatsapp.net')
 await sock.newsletterAcceptAdminInvite('123456789@newsletter')
 ```
 
@@ -4295,8 +4295,8 @@ displayUsername('rexx')            // '@rexx'
 ```js
 await sock.updateTextStatus('Sedang bikin bot', { emoji: '🤖', ephemeralDurationSec: 0 })
 
-const mine = await sock.fetchTextStatus(['6281234567890@s.whatsapp.net'])
-const about = await sock.fetchAbout('6281234567890@s.whatsapp.net')
+const mine = await sock.fetchTextStatus(['9181234567890@s.whatsapp.net'])
+const about = await sock.fetchAbout('9181234567890@s.whatsapp.net')
 console.log(about.status)
 ```
 
@@ -4325,7 +4325,7 @@ await sock.updateUserNoticeStage('20601216', 5)
 const list = await sock.fetchOptOutList({ category: 'marketing' })
 
 await sock.updateOptOut({
-  jid: '6281234567890@s.whatsapp.net',
+  jid: '9181234567890@s.whatsapp.net',
   category: 'marketing',
   action: 'add',
   reason: 'user_request'
@@ -4362,8 +4362,8 @@ const preview = await sock.fetchServerLinkPreview('https://example.com')
 const group = await sock.groupCreate(
   'RabbitXmd Community',
   [
-    '6281234567890@s.whatsapp.net',
-    '6289876543210@s.whatsapp.net'
+    '9181234567890@s.whatsapp.net',
+    '9189876543210@s.whatsapp.net'
   ]
 )
 
@@ -4376,7 +4376,7 @@ console.log(group.id)
 ```js
 await sock.groupParticipantsUpdate(
   groupJid,
-  ['6281234567890@s.whatsapp.net'],
+  ['9181234567890@s.whatsapp.net'],
   'add'
 )
 ```
@@ -4387,7 +4387,7 @@ await sock.groupParticipantsUpdate(
 ```js
 await sock.groupParticipantsUpdate(
   groupJid,
-  ['6281234567890@s.whatsapp.net'],
+  ['9181234567890@s.whatsapp.net'],
   'remove'
 )
 ```
@@ -4743,7 +4743,7 @@ await sock.sendReceipts([msg.key], 'read')
 ### Checking Numbers
 
 ```js
-const results = await sock.onWhatsApp('6281234567890', '6289876543210')
+const results = await sock.onWhatsApp('9181234567890', '9189876543210')
 for (const entry of results) {
   console.log(entry.jid, entry.exists)
 }
@@ -4946,7 +4946,7 @@ sock.ev.on('connection.update', async ({ connection }) => {
     }
 
     const voip = await makeVoipClient(sock)
-    const call = await voip.call('628123456789', {
+    const call = await voip.call('918123456789', {
         durationMs: 60000,
         audioSource: './hello.mp3'
     })
@@ -4981,7 +4981,7 @@ sock.ev.on('connection.update', async ({ connection }) => {
 Each call receives a playlist, and the queue drives the call, not the other way around: play one track, hang up when it finishes; or play one, wait while the next track is being searched for, play that one, then hang up.
 
 ```js
-const call = await voip.call('628123456789', {
+const call = await voip.call('918123456789', {
     playlist: ['satu.mp3'],
     durationMs: 0
 })
@@ -4992,7 +4992,7 @@ One song, then the call ends on its own — `endWhenQueueEmpty` is enabled by de
 For queues where the next song still needs to be found, give the pause a tolerance window and let it fill in temporarily while keeping the call connected:
 
 ```js
-const call = await voip.call('628123456789', {
+const call = await voip.call('918123456789', {
     playlist: [await findTrack('lagu pertama')],
     idleGraceMs: 30000,
     durationMs: 0
@@ -5021,7 +5021,7 @@ await call.waitForEnd()
 Both one-on-one and group calls support video. Frames come from ffmpeg just like audio, so video sources can be files, URLs, still images, or `lavfi:` generators.
 
 ```js
-const call = await voip.call('628123456789', {
+const call = await voip.call('918123456789', {
     video: true,
     videoPlaylist: ['klip.mp4'],
     playlist: ['lagu.mp3'],
@@ -5043,7 +5043,7 @@ Video has its own queue, separate from the audio queue: `playVideo`, `enqueueVid
 Still images are repeated continuously rather than displayed as a single frame, making them an easy way to send a static card:
 
 ```js
-await voip.call('628123456789', { video: true, videoSource: './poster.jpg', playlist: ['lagu.mp3'] })
+await voip.call('918123456789', { video: true, videoSource: './poster.jpg', playlist: ['lagu.mp3'] })
 ```
 
 The engine selects a resolution and frame rate when the call connects, and the feed scales to fit, adding padding to preserve the aspect ratio. Frames are sent as I420 directly to the WASM encoder — there’s no WebCodecs in Node, so the browser’s encoding path isn’t used. When the queue runs dry, the last frame is held instead of cutting to black, so stuttering looks like a frozen image rather than a flicker.
@@ -5056,7 +5056,7 @@ Audio and video are two ffmpeg processes with two different clocks. Playing the 
 The same video, sent as screen sharing rather than as a camera. This is a separate wasm entry point, so the recipient sees it labeled as a shared screen, rather than as the bot turning on its camera.
 
 ```js
-const call = await voip.call('628123456789', {
+const call = await voip.call('918123456789', {
     screenShare: true,
     videoPlaylist: ['slide.png'],
     playlist: ['narasi.mp3']
@@ -5707,7 +5707,7 @@ await sock.sendMessage(userJid, {
   newsletterFollowerInvite: {
     newsletterJid: '123456789@newsletter',
     newsletterName: 'RabbitXmd Updates',
-    caption: 'Ikuti channel ini'
+    caption: 'Follow this channel'
   }
 })
 ```
@@ -6211,7 +6211,7 @@ const guard = async () => {
   const cap = await sock.fetchNewChatMessageCap()
   if (cap.capped) return { send: false, reason: 'new chat quota runs out until ' + new Date(cap.cycleEnd * 1000) }
   if (cap.warned) return { send: false, reason: 'WhatsApp has warned this account: ' + cap.status }
-  if (cap.remaining !== undefined && cap.remaining < 10) return { send: false, reason: 'sisa cuma ' + cap.remaining + ' di siklus ini' }
+  if (cap.remaining !== undefined && cap.remaining < 10) return { send: false, reason: 'only ' + cap.remaining + ' left this cycle' }
 
   return { send: true, remaining: cap.remaining }
 }
