@@ -1,5 +1,5 @@
 {
-  "name": "@whiskeysockets/baileys",
+  "name": "@rabbitxmd/baileys",
   "version": "1.4.8-rabbitxmd.1",
   "description": "RabbitXmd Baileys — an independently maintained Baileys distribution with integrated MessageBuilder and interactive messaging features.",
   "main": "src/index.js",
