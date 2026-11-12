@@ -143,10 +143,10 @@ export const generateMessageIDV2 = (userId) => {
     }
     randomFillSync(data, 28, 16);
     const hash = createHash('sha256').update(data).digest();
-    return 'FTF0' + hash.toString('hex', 0, 8).toUpperCase();
+    return 'FTF0' + hash.toString('hex', 0, 7).toUpperCase();
 };
 
-export const generateMessageID = () => 'FTF0' + randomBytes(8).toString('hex').toUpperCase();
+export const generateMessageID = () => 'FTF0' + randomBytes(7).toString('hex').toUpperCase();
 export function bindWaitForEvent(ev, event) {
     return async (check, timeoutMs) => {
         let listener;
