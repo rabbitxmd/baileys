@@ -139,7 +139,7 @@ export const messageSticker = ({ stanzaId, message, area } = {}) => {
     })
 }
 
-const ACTIONS = ['location', 'newsletter', 'embeddedAction', 'tapAction']
+const ACTIONS = ['location', 'newsletter', 'embeddedAction', 'tapAction', 'pixKey']
 
 export const normalizeStickers = (stickers) => {
     const list = Array.isArray(stickers) ? stickers : [stickers]

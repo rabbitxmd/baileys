@@ -1004,20 +1004,29 @@ export const generateWAMessageContent = async (message, options) => {
             if (!value?.name) {
                 throw new Boom('Each photo poll option needs a name', { statusCode: 400 });
             }
+            // Optional date for the option (Date or epoch milliseconds), e.g. for date-picking polls.
+            let optionDatetime;
+            if (value.datetime !== undefined && value.datetime !== null) {
+                optionDatetime = value.datetime instanceof Date ? value.datetime.getTime() : Number(value.datetime);
+                if (!Number.isFinite(optionDatetime)) {
+                    throw new Boom('Poll option datetime must be a Date or epoch milliseconds', { statusCode: 400 });
+                }
+            }
             if (value.optionHash) {
                 hasPollOptionImage = true;
-                pollOptions.push({ optionName: value.name, optionHash: value.optionHash });
+                pollOptions.push({ optionName: value.name, optionHash: value.optionHash, optionDatetime });
                 continue;
             }
             if (!value.image) {
-                pollOptions.push({ optionName: value.name });
+                pollOptions.push({ optionName: value.name, optionDatetime });
                 continue;
             }
             const prepared = await prepareWAMessageMedia({ image: value.image }, options);
             hasPollOptionImage = true;
             pollOptions.push({
                 optionName: value.name,
-                optionHash: getPollOptionHash(value.name, prepared.imageMessage?.fileSha256)
+                optionHash: getPollOptionHash(value.name, prepared.imageMessage?.fileSha256),
+                optionDatetime
             });
         }
         const usesExtendedPollSettings = Boolean(message.poll.endDate) ||
