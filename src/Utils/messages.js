@@ -1230,7 +1230,8 @@ export const generateWAMessageContent = async (message, options) => {
             if (!hasNonNullishProperty(message, 'audio')) {
                 throw new Boom('audioSticker needs audio or audioMessage', { statusCode: 400 });
             }
-            const audioInput = { audio: message.audio };
+            // The sound rides as a voice note, as in the working reference plugin.
+            const audioInput = { audio: message.audio, ptt: true };
             for (const key of ['ptt', 'seconds', 'waveform', 'mimetype']) {
                 if (message[key] !== undefined && message[key] !== null) {
                     audioInput[key] = message[key];
@@ -1238,7 +1239,18 @@ export const generateWAMessageContent = async (message, options) => {
             }
             ({ audioMessage } = await prepareWAMessageMedia(audioInput, options));
         }
-        const { stickerMessage } = await prepareWAMessageMedia({ sticker: message.sticker }, options);
+        const stickerInput = { sticker: message.sticker, mimetype: 'image/webp' };
+        if (message.isAnimated !== undefined && message.isAnimated !== null) {
+            stickerInput.isAnimated = Boolean(message.isAnimated);
+        }
+        const { stickerMessage } = await prepareWAMessageMedia(stickerInput, options);
+        // Plain sticker flags, set explicitly so the client treats this as an ordinary sticker.
+        stickerMessage.isLottie = false;
+        stickerMessage.isAvatar = false;
+        stickerMessage.isAiSticker = false;
+        if (stickerInput.isAnimated !== undefined) {
+            stickerMessage.isAnimated = stickerInput.isAnimated;
+        }
         stickerMessage.audioMessage = audioMessage;
         m.audioStickerMessage = { message: { stickerMessage } };
         m.messageContextInfo = { ...m.messageContextInfo, messageSecret: randomBytes(32) };
