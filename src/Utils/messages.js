@@ -1210,18 +1210,29 @@ export const generateWAMessageContent = async (message, options) => {
         m.instantVideoMessage = videoMessage;
     }
     else if (hasOptionalProperty(message, 'audioSticker') && message.audioSticker) {
-        // Experimental: audioStickerMessage is a FutureProofMessage wrapping a plain audioMessage.
-        if (!hasNonNullishProperty(message, 'audio')) {
-            throw new Boom('audioSticker needs audio', { statusCode: 400 });
+        // Experimental. Shape: audioStickerMessage { message { stickerMessage { ...webp, audioMessage } } }
+        // plus a messageSecret. WhatsApp Web does not render it, so this is send-only and untested end to end.
+        if (!hasNonNullishProperty(message, 'sticker')) {
+            throw new Boom('audioSticker needs a sticker (webp image)', { statusCode: 400 });
         }
-        const audioInput = { audio: message.audio };
-        for (const key of ['ptt', 'seconds', 'waveform', 'mimetype']) {
-            if (message[key] !== undefined && message[key] !== null) {
-                audioInput[key] = message[key];
+        // audioMessage is an audio that is already uploaded, for example the quoted voice note.
+        let audioMessage = message.audioMessage;
+        if (!audioMessage) {
+            if (!hasNonNullishProperty(message, 'audio')) {
+                throw new Boom('audioSticker needs audio or audioMessage', { statusCode: 400 });
             }
+            const audioInput = { audio: message.audio };
+            for (const key of ['ptt', 'seconds', 'waveform', 'mimetype']) {
+                if (message[key] !== undefined && message[key] !== null) {
+                    audioInput[key] = message[key];
+                }
+            }
+            ({ audioMessage } = await prepareWAMessageMedia(audioInput, options));
         }
-        const { audioMessage } = await prepareWAMessageMedia(audioInput, options);
-        m.audioStickerMessage = { message: { audioMessage } };
+        const { stickerMessage } = await prepareWAMessageMedia({ sticker: message.sticker }, options);
+        stickerMessage.audioMessage = audioMessage;
+        m.audioStickerMessage = { message: { stickerMessage } };
+        m.messageContextInfo = { ...m.messageContextInfo, messageSecret: randomBytes(32) };
     }
     else if (hasNonNullishProperty(message, 'song')) {
         const { audio, artwork, title, author, url, largeThumbnail = true, thumbnailWidth = 640, mediaType = 1, ...rest } = message.song;
