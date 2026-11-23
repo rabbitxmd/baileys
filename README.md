@@ -119,6 +119,7 @@ New here? This is the whole library at a glance. Each row links to the section t
 | Play a song queue during a call | `playlist`, `enqueue`, `idle` | [Playing an Audio Queue](#memainkan-antrean-audio) |
 | Send video or share your screen during a call | `video: true`, `screenShare: true` | [Video Calls](#panggilan-video), [Screen Sharing](#berbagi-layar) |
 | Call an entire group at once | `voip.callGroup` | [Group Calls](#panggilan-grup) |
+| Answer or reject incoming calls, hear the caller, speak live, run group calls | `attachCalls` | [Call Kit](#call-kit-incoming-calls-and-live-audio) |
 | Change or read a profile photo | profile photo helper | [Profile Photos](#-foto-profil) |
 | Schedule messages for later | scheduled messages | [Scheduled Messages](#-pesan-terjadwal) |
 | Keep up with WhatsApp Web changes | `npm run wa:update` | [Updating the WhatsApp Web Version](#-memperbarui-versi-whatsapp-web) |
@@ -5101,6 +5102,43 @@ The stack includes `whatsapp.wasm`, `loader.js`, and `worker-modules.js` under `
 Those three files belong to WhatsApp Web itself, carried byte for byte. A supply-chain scanner will flag them as obfuscated code and a large binary, so `src/assets/wasm/README.md` records their checksums, what they can and can’t access, and why they aren’t reformatted; `npm run verify:assets` checks everything again with one command.
 
 Nothing is written to stdout unless you ask: pass `debug: true` for its built-in tracing, or `logger: (...args) => …` to direct it to your own logger.
+
+<a id="call-kit-incoming-calls-and-live-audio"></a>
+### Call Kit: incoming calls and live audio
+
+`makeVoipClient` above places calls and plays files. **Call Kit** is the other half: it answers and rejects incoming calls, hands you the caller's audio, lets you speak into a call live, and runs group calls with their roster, rekeying and video subscriptions. It is the `baileys-call-kit` adapter on top of the zapo VoIP stack (MIT), bundled in `src/CallKit/` together with the zapo media layer, so there is nothing extra to install from npm besides two optional packages:
+
+```bash
+npm i @roamhq/wrtc libmlow-wasm-fork
+```
+
+```js
+import makeWASocket, { attachCalls } from '@whiskeysockets/baileys'
+
+const sock = makeWASocket({ /* ... */ })
+const calls = await attachCalls(sock, { logger })
+
+calls.events.on('voip_call_incoming', async (call) => {
+    await calls.voip.acceptCall(call.callId)          // or rejectCall(call.callId)
+})
+calls.events.on('voip_call_inbound_audio', ({ call, pcm }) => {
+    // pcm is a Float32Array of 16 kHz mono audio
+})
+calls.events.on('voip_call_ended', (call) => console.log('ended', call.callId))
+
+const callId = await calls.voip.startCall({ peerJid: '918123456789@s.whatsapp.net' })
+calls.voip.feedLiveAudio(callId, float32Pcm16k)       // speak into the call
+await calls.voip.endCall(callId)
+```
+
+- `calls.voip` is the coordinator (`startCall`, `acceptCall`, `rejectCall`, `endCall`, `setMute`, `loadAudio`, `feedLiveAudio`, `getCall`, `getCalls`, video and group-call methods). `calls.events` carries the `voip_*` events.
+- Group calls: `startCall({ groupJid, participants: [{ jid }] })`. Several calls at once need `attachCalls(sock, { maxConcurrentCalls: 2 })`.
+- Reconnecting creates a new socket: call `attachCalls` again with it, and `detach()` the old one.
+- `attachCalls` loads the call stack on first use. To get its enums (`CallState`, `EndCallReason`, ...) use `const { EndCallReason } = await loadCallKit()`; to import it synchronously, import `src/CallKit/index.js` yourself.
+- Decoding a recorded file for `loadAudio` needs `ffmpeg` on the `PATH`.
+- Use either `makeVoipClient` or `attachCalls` on a given socket, not both: each registers its own handlers for the same call stanzas.
+
+**Status.** The offline suite (`test/callkit.test.js`) drives it with a fake socket: an incoming offer is acked, its call key decrypted, `voip_call_incoming` emitted, reject sent, and `startCall` syncs devices, encrypts per device and sends the offer. It has **not** been run through a real WhatsApp call from this fork. Worth checking on a live account: your socket and Call Kit both ack `<call>` stanzas (so an offer gets two acks), and the media path (relay, SRTP, MLow) is the zapo code unchanged.
 
 <a id="keluar"></a>
 ### Exit

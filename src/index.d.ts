@@ -42,3 +42,5 @@ export declare const Toolkit: typeof ToolkitCore & BuilderMembers;
 export type Toolkit = ToolkitCore;
 export declare const MessageBuilder: Readonly<typeof MessageBuilderCore & BuilderMembers>;
 export declare const MB: typeof MessageBuilder;
+export declare function attachCalls(sock: any, options?: import("./CallKit/index.js").AttachCallsOptions): Promise<import("./CallKit/index.js").BaileysCalls>;
+export declare function loadCallKit(): Promise<typeof import("./CallKit/index.js")>;

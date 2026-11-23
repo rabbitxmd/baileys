@@ -1,0 +1,114 @@
+import { concatBytes, TEXT_DECODER, TEXT_ENCODER } from '../bytes.js';
+import { encodeProtoLengthDelimited, encodeProtoVarintField, PROTO_WIRE_LENGTH_DELIMITED, PROTO_WIRE_VARINT, readProtoFields } from '../protobuf.js';
+/**
+ * Field numbers of the `wa.voip` app-data messages. Field 2 of `appDataMessage`, live
+ * transcription, is not modelled. The emoji travels as a UTF-8 glyph, never an index.
+ */
+const APP_DATA_PAYLOADS_MESSAGES = 1;
+const APP_DATA_MESSAGE_REACTION_INFO = 1;
+const APP_DATA_MESSAGE_AR_EFFECT_INFO = 3;
+/** `reactionInfo` and `arEffectInfo` share one shape: a transaction id, then a string. */
+const INFO_TRANSACTION_ID = 1;
+const INFO_TEXT = 2;
+/** Ceiling on the messages one app-data payload may carry: a local guard, not a protocol limit. */
+const MAX_MESSAGES_PER_PAYLOAD = 32;
+/**
+ * Serializes one emoji reaction into an app-data RTP payload, in the list nesting the
+ * official receive path parses. No sender, recipient or routing mode: the relay routes app
+ * data by the SSRC it arrives on, and routing fields belong to `dataChannelMessage`, a
+ * different transport.
+ */
+export function encodeReactionPayload(reaction) {
+    const reactionInfo = concatBytes([
+        encodeProtoVarintField(INFO_TRANSACTION_ID, reaction.transactionId),
+        encodeProtoLengthDelimited(INFO_TEXT, TEXT_ENCODER.encode(reaction.reaction))
+    ]);
+    const message = encodeProtoLengthDelimited(APP_DATA_MESSAGE_REACTION_INFO, reactionInfo);
+    return encodeProtoLengthDelimited(APP_DATA_PAYLOADS_MESSAGES, message);
+}
+/** The transaction id and string of a `reactionInfo` or `arEffectInfo`; null without the string. */
+function decodeInfo(data, requireTransactionId) {
+    let transactionId = null;
+    let text = null;
+    for (const field of readProtoFields(data)) {
+        if (field.fieldNumber === INFO_TRANSACTION_ID && field.wireType === PROTO_WIRE_VARINT) {
+            transactionId = field.varint;
+        }
+        else if (field.fieldNumber === INFO_TEXT &&
+            field.wireType === PROTO_WIRE_LENGTH_DELIMITED) {
+            text = TEXT_DECODER.decode(field.bytes);
+        }
+    }
+    if (text === null)
+        return null;
+    if (transactionId === null && requireTransactionId)
+        return null;
+    return { transactionId: transactionId ?? 0n, text };
+}
+/**
+ * Reads one `appDataMessage`. `strict` demands the transaction id every real sender fills, so
+ * the bare-message fallback does not read a list's inner bytes as an emoji nobody sent.
+ */
+function decodeAppDataMessage(data, strict) {
+    let reaction = null;
+    let arEffect = null;
+    for (const field of readProtoFields(data)) {
+        if (field.wireType !== PROTO_WIRE_LENGTH_DELIMITED)
+            continue;
+        if (field.fieldNumber === APP_DATA_MESSAGE_REACTION_INFO) {
+            const info = decodeInfo(field.bytes, strict);
+            reaction = info && { transactionId: info.transactionId, reaction: info.text };
+        }
+        else if (field.fieldNumber === APP_DATA_MESSAGE_AR_EFFECT_INFO) {
+            const info = decodeInfo(field.bytes, strict);
+            arEffect = info && { transactionId: info.transactionId, arEffectId: info.text };
+        }
+    }
+    if (reaction)
+        return arEffect ? { reaction, arEffect } : { reaction };
+    return arEffect ? { arEffect } : null;
+}
+function decodeAsPayloads(data) {
+    const items = [];
+    let truncated = false;
+    for (const field of readProtoFields(data)) {
+        if (field.fieldNumber !== APP_DATA_PAYLOADS_MESSAGES)
+            continue;
+        if (field.wireType !== PROTO_WIRE_LENGTH_DELIMITED)
+            continue;
+        if (items.length >= MAX_MESSAGES_PER_PAYLOAD) {
+            truncated = true;
+            break;
+        }
+        const item = decodeAppDataMessage(field.bytes, false);
+        if (item)
+            items.push(item);
+    }
+    return { items, truncated };
+}
+/**
+ * Reads the payload of one inbound app-data RTP packet. Returns `null` when the bytes
+ * carry nothing this package models, including a well-formed payload holding only unread
+ * kinds such as live transcription. The list nesting is tried first because the two shapes
+ * are only told apart by which one yields a message.
+ */
+export function decodeAppDataPayload(data) {
+    try {
+        const nested = decodeAsPayloads(data);
+        if (nested.items.length > 0) {
+            return { shape: 'payloads', items: nested.items, truncated: nested.truncated };
+        }
+    }
+    catch {
+        // A payload that is not a valid list is not thereby an invalid message.
+    }
+    try {
+        const flat = decodeAppDataMessage(data, true);
+        if (flat)
+            return { shape: 'message', items: [flat], truncated: false };
+    }
+    catch {
+        return null;
+    }
+    return null;
+}

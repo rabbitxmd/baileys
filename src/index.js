@@ -44,5 +44,18 @@ for (const [name, member] of builderMembers) {
 
 Object.freeze(MessageBuilder);
 
+/**
+ * Adds WhatsApp voice and video calling (incoming and outgoing, live audio, group calls) to a socket.
+ * The call stack is loaded on first use, so bots that never call pay nothing at start-up.
+ * It needs `@roamhq/wrtc` and `libmlow-wasm-fork` installed; see the "Call Kit" section of the README.
+ * Call it again with the new socket after a reconnect, and `detach()` the old one.
+ */
+export const attachCalls = async (sock, options) => {
+    const { attachCalls: attach } = await import('./CallKit/index.js');
+    return attach(sock, options);
+};
+/** Loads the call module itself, for its enums (CallState, EndCallReason, ...) and the coordinator class. */
+export const loadCallKit = () => import('./CallKit/index.js');
+
 export { makeWASocket };
 export default makeWASocket;
