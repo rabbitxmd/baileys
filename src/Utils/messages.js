@@ -14,6 +14,7 @@ import { shouldIncludeReportingToken } from './reporting-utils.js';
 import { buildMusicMessage, normalizeStickers } from './status-stickers.js';
 import { buildSocialPreview } from './link-preview-metadata.js';
 import { buildPaymentReminder, buildSplitPayment, buildSplitPaymentUpdate } from './payment-messages.js';
+import { buildPaymentDetails, buildRequestLocationUpdate, buildVpcRequest, resolveEditDisplayType } from './proto-features.js';
 import { NATIVE_FLOW_BUTTON_LIMIT, WEB_SUPPORTED_INTERACTIVE_FLOWS, getNativeFlowNameByButtonName } from './native-flow.js';
 
 const trimEmptyValues = (object) => {
@@ -1192,6 +1193,22 @@ export const generateWAMessageContent = async (message, options) => {
     else if (hasNonNullishProperty(message, 'paymentReminder')) {
         m.paymentReminderMessage = buildPaymentReminder(message.paymentReminder);
     }
+    else if (hasNonNullishProperty(message, 'paymentDetails')) {
+        m.paymentDetailsMessage = buildPaymentDetails(message.paymentDetails);
+    }
+    else if (hasNonNullishProperty(message, 'vpcRequest')) {
+        m.vpcRequestMessage = buildVpcRequest(message.vpcRequest);
+    }
+    else if (hasNonNullishProperty(message, 'requestLocation')) {
+        m.requestLocationMessage = {};
+    }
+    else if (hasNonNullishProperty(message, 'requestLocationUpdate')) {
+        m.requestLocationUpdateMessage = buildRequestLocationUpdate(message.requestLocationUpdate);
+    }
+    else if (hasOptionalProperty(message, 'instantVideo') && message.instantVideo) {
+        const { videoMessage } = await prepareWAMessageMedia({ video: message.video }, options);
+        m.instantVideoMessage = videoMessage;
+    }
     else if (hasNonNullishProperty(message, 'song')) {
         const { audio, artwork, title, author, url, largeThumbnail = true, thumbnailWidth = 640, mediaType = 1, ...rest } = message.song;
         if (!audio) {
@@ -1695,12 +1712,16 @@ export const generateWAMessageContent = async (message, options) => {
         delete message.viewOnceV2Extension;
     }
     if (hasOptionalProperty(message, 'edit')) {
+        const messageEditDisplayType = hasOptionalProperty(message, 'editDisplayType')
+            ? resolveEditDisplayType(message.editDisplayType)
+            : undefined;
         m = {
             protocolMessage: {
                 key: message.edit,
                 editedMessage: m,
                 timestampMs: Date.now(),
-                type: WAProto.Message.ProtocolMessage.Type.MESSAGE_EDIT
+                type: WAProto.Message.ProtocolMessage.Type.MESSAGE_EDIT,
+                ...(messageEditDisplayType !== undefined ? { messageEditDisplayType } : {})
             }
         };
     }
