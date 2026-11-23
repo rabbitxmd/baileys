@@ -1219,29 +1219,31 @@ export const generateWAMessageContent = async (message, options) => {
         m.instantVideoMessage = videoMessage;
     }
     else if (hasOptionalProperty(message, 'audioSticker') && message.audioSticker) {
+        // Two forms: { audioSticker: true, sticker, audio } or { audioSticker: { sticker, audio, ... } }.
+        const input = typeof message.audioSticker === 'object' ? { ...message, ...message.audioSticker } : message;
         // Experimental. Shape: audioStickerMessage { message { stickerMessage { ...webp, audioMessage } } }
         // plus a messageSecret. WhatsApp Web does not render it, so this is send-only and untested end to end.
-        if (!hasNonNullishProperty(message, 'sticker')) {
+        if (!hasNonNullishProperty(input, 'sticker')) {
             throw new Boom('audioSticker needs a sticker (webp image)', { statusCode: 400 });
         }
         // audioMessage is an audio that is already uploaded, for example the quoted voice note.
-        let audioMessage = message.audioMessage;
+        let audioMessage = input.audioMessage;
         if (!audioMessage) {
-            if (!hasNonNullishProperty(message, 'audio')) {
+            if (!hasNonNullishProperty(input, 'audio')) {
                 throw new Boom('audioSticker needs audio or audioMessage', { statusCode: 400 });
             }
             // The sound rides as a voice note, as in the working reference plugin.
-            const audioInput = { audio: message.audio, ptt: true };
+            const audioInput = { audio: input.audio, ptt: true };
             for (const key of ['ptt', 'seconds', 'waveform', 'mimetype']) {
-                if (message[key] !== undefined && message[key] !== null) {
-                    audioInput[key] = message[key];
+                if (input[key] !== undefined && input[key] !== null) {
+                    audioInput[key] = input[key];
                 }
             }
             ({ audioMessage } = await prepareWAMessageMedia(audioInput, options));
         }
-        const stickerInput = { sticker: message.sticker, mimetype: 'image/webp' };
-        if (message.isAnimated !== undefined && message.isAnimated !== null) {
-            stickerInput.isAnimated = Boolean(message.isAnimated);
+        const stickerInput = { sticker: input.sticker, mimetype: 'image/webp' };
+        if (input.isAnimated !== undefined && input.isAnimated !== null) {
+            stickerInput.isAnimated = Boolean(input.isAnimated);
         }
         const { stickerMessage } = await prepareWAMessageMedia(stickerInput, options);
         // Plain sticker flags, set explicitly so the client treats this as an ordinary sticker.
