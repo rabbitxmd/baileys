@@ -1209,6 +1209,20 @@ export const generateWAMessageContent = async (message, options) => {
         const { videoMessage } = await prepareWAMessageMedia({ video: message.video }, options);
         m.instantVideoMessage = videoMessage;
     }
+    else if (hasOptionalProperty(message, 'audioSticker') && message.audioSticker) {
+        // Experimental: audioStickerMessage is a FutureProofMessage wrapping a plain audioMessage.
+        if (!hasNonNullishProperty(message, 'audio')) {
+            throw new Boom('audioSticker needs audio', { statusCode: 400 });
+        }
+        const audioInput = { audio: message.audio };
+        for (const key of ['ptt', 'seconds', 'waveform', 'mimetype']) {
+            if (message[key] !== undefined && message[key] !== null) {
+                audioInput[key] = message[key];
+            }
+        }
+        const { audioMessage } = await prepareWAMessageMedia(audioInput, options);
+        m.audioStickerMessage = { message: { audioMessage } };
+    }
     else if (hasNonNullishProperty(message, 'song')) {
         const { audio, artwork, title, author, url, largeThumbnail = true, thumbnailWidth = 640, mediaType = 1, ...rest } = message.song;
         if (!audio) {
