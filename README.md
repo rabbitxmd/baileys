@@ -5106,7 +5106,7 @@ Nothing is written to stdout unless you ask: pass `debug: true` for its built-in
 <a id="call-kit-incoming-calls-and-live-audio"></a>
 ### Call Kit: incoming calls and live audio
 
-`makeVoipClient` above places calls and plays files. **Call Kit** is the other half: it answers and rejects incoming calls, hands you the caller's audio, lets you speak into a call live, and runs group calls with their roster, rekeying and video subscriptions. It is the `baileys-call-kit` adapter on top of the zapo VoIP stack (MIT), bundled in `src/CallKit/` together with the zapo media layer, so installing Baileys is enough: `@roamhq/wrtc`, `libmlow-wasm-fork` and `ffmpeg-static` come along as optional dependencies (npm skips any that cannot build on your platform, and a system `ffmpeg` is used first when there is one).
+`makeVoipClient` above places calls and plays files. **Call Kit** is the other half: it answers and rejects incoming calls, hands you the caller's audio, lets you speak into a call live, and runs group calls with their roster, rekeying and video subscriptions. It is the `baileys-call-kit` adapter on top of the zapo VoIP stack (MIT), bundled in `src/CallKit/` together with the zapo media layer, so installing Baileys is enough (full guide with every feature: [CALLS.md](./CALLS.md)): `@roamhq/wrtc`, `libmlow-wasm-fork` and `ffmpeg-static` come along as optional dependencies (npm skips any that cannot build on your platform, and a system `ffmpeg` is used first when there is one).
 
 ```js
 import makeWASocket, { attachCalls } from '@whiskeysockets/baileys'
