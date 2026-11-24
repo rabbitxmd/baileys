@@ -1,8 +1,18 @@
 import { execFile, spawn } from 'node:child_process';
+import { createRequire } from 'node:module';
 import { access } from 'node:fs/promises';
 import { toBytesView } from '../../compat/util.js';
 import { concatBytes, TEXT_DECODER } from '../bytes.js';
-const FFMPEG_BIN = 'ffmpeg';
+/** ffmpeg on PATH wins; otherwise the binary bundled by the optional ffmpeg-static package. */
+let ffmpegBin = 'ffmpeg';
+function bundledFfmpeg() {
+    try {
+        return createRequire(import.meta.url)('ffmpeg-static') || null;
+    }
+    catch {
+        return null;
+    }
+}
 const MAX_DECODE_BYTES = 128 * 1024 * 1024;
 const MAX_STDERR_CHARS = 16 * 1024;
 const ffmpegProbeCache = new Map();
@@ -29,8 +39,12 @@ export async function decodeAudioFile(audioPath, sampleRate) {
     catch {
         throw new Error(`File not found: ${audioPath}`);
     }
-    if (!(await hasFfmpeg(FFMPEG_BIN))) {
-        throw new Error('ffmpeg not found on PATH (install ffmpeg to load audio files)');
+    if (!(await hasFfmpeg(ffmpegBin))) {
+        const bundled = bundledFfmpeg();
+        if (!bundled || !(await hasFfmpeg(bundled))) {
+            throw new Error('ffmpeg not found (install ffmpeg, or the ffmpeg-static package)');
+        }
+        ffmpegBin = bundled;
     }
     const pcmData = await decodeWithFFmpeg(audioPath, sampleRate);
     return int16ToFloat32(pcmData);
@@ -44,7 +58,7 @@ function int16ToFloat32(pcmData) {
 }
 async function decodeWithFFmpeg(inputPath, sampleRate) {
     return new Promise((resolve, reject) => {
-        const proc = spawn(FFMPEG_BIN, [
+        const proc = spawn(ffmpegBin, [
             '-hide_banner',
             '-loglevel',
             'error',

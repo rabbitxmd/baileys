@@ -9,4 +9,4 @@
 
 The TypeScript was compiled to ES2022 modules. The only source edits were the imports of
 `@zapo-js/voip-media`, which now point at `media/`. `@roamhq/wrtc` and `libmlow-wasm-fork` stay
-optional peer dependencies, loaded when a call starts media.
+optional dependencies (installed with the package, loaded when a call starts media).
