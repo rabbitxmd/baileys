@@ -348,8 +348,12 @@ export class WaCallManager extends EventEmitter {
         const relay = parseRelayFromAck(nodeInfo.innerNode);
         const mediaType = isVideo ? CallMediaType.Video : CallMediaType.Audio;
         const info = CallInfo.newIncoming(callId, peerJid, callCreator, callerPn, mediaType);
-        info.joinable = parseJoinableAttr(nodeInfo.innerNode);
         info.groupJid = parseGroupJidAttr(nodeInfo.innerNode) ?? undefined;
+        // A lightweight group offer (a group voice chat) is followed at once by a <terminate> that ends the ring,
+        // not the chat. It carries no joinable attribute, so it is treated as joinable: the ring ending is
+        // ignored and an accept in flight is kept. Observed on live offers, not taken from the zapo source.
+        const lightweight = ['1', 'true'].includes(nodeInfo.innerNode.attrs?.lightweight);
+        info.joinable = parseJoinableAttr(nodeInfo.innerNode) || (lightweight && !!info.groupJid);
         if (callKey) {
             info.encryptionKey = callKey;
         }
