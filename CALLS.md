@@ -4,9 +4,8 @@ Voice, video and group calls on a Baileys socket: place calls, answer or reject 
 call, hear the other side, join and leave group calls, react, raise a hand, mute, switch to video and
 share the screen.
 
-This is the bundled **Call Kit** (`src/CallKit/`): the `baileys-call-kit` adapter on top of the zapo VoIP
-stack (MIT, see `src/CallKit/NOTICE.md`). Most of the behaviour below is described in the zapo
-`@zapo-js/voip` README; this page is the Baileys version of it.
+This is the bundled **Call Kit** (`src/CallKit/`): the `baileys-call-kit` adapter on top of a bundled VoIP
+stack (MIT, see `src/CallKit/NOTICE.md`); this page is the Baileys guide to it.
 
 > **Not yet run against a real WhatsApp call.** The socket seam is covered by an offline test
 > (`test/callkit.test.js`), but audio, video, group calls and every in-call feature still need a live
@@ -381,6 +380,4 @@ advanced; see `src/CallKit/core/WaVoipCoordinator.d.ts`.
 
 ## Credits
 
-Call logic from [zapo](https://github.com/vinikjkkj/zapo) (`@zapo-js/voip`, `@zapo-js/voip-media`) and
-`baileys-call-kit`, both MIT. Licences are in `src/CallKit/LICENSE.zapo` and
-`src/CallKit/LICENSE.baileys-call-kit`.
+The call code is MIT licensed; see `src/CallKit/NOTICE.md` and the licence files next to it.

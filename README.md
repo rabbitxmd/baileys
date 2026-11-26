@@ -5106,7 +5106,7 @@ Nothing is written to stdout unless you ask: pass `debug: true` for its built-in
 <a id="call-kit-incoming-calls-and-live-audio"></a>
 ### Call Kit: incoming calls and live audio
 
-`makeVoipClient` above places calls and plays files. **Call Kit** is the other half: it answers and rejects incoming calls, hands you the caller's audio, lets you speak into a call live, and runs group calls with their roster, rekeying and video subscriptions. It is the `baileys-call-kit` adapter on top of the zapo VoIP stack (MIT), bundled in `src/CallKit/` together with the zapo media layer, so installing Baileys is enough (full guide with every feature: [CALLS.md](./CALLS.md)): `@roamhq/wrtc`, `libmlow-wasm-fork` and `ffmpeg-static` come along as optional dependencies (npm skips any that cannot build on your platform, and a system `ffmpeg` is used first when there is one).
+`makeVoipClient` above places calls and plays files. **Call Kit** is the other half: it answers and rejects incoming calls, hands you the caller's audio, lets you speak into a call live, and runs group calls with their roster, rekeying and video subscriptions. It is the `baileys-call-kit` adapter on top of a VoIP stack (MIT, see `src/CallKit/NOTICE.md`), bundled in `src/CallKit/` together with its media layer, so installing Baileys is enough (full guide with every feature: [CALLS.md](./CALLS.md)): `@roamhq/wrtc`, `libmlow-wasm-fork` and `ffmpeg-static` come along as optional dependencies (npm skips any that cannot build on your platform, and a system `ffmpeg` is used first when there is one).
 
 ```js
 import makeWASocket, { attachCalls } from '@whiskeysockets/baileys'
@@ -5134,7 +5134,7 @@ await calls.voip.endCall(callId)
 - Decoding a recorded file for `loadAudio` needs `ffmpeg` on the `PATH`.
 - Use either `makeVoipClient` or `attachCalls` on a given socket, not both: each registers its own handlers for the same call stanzas.
 
-**Status.** The offline suite (`test/callkit.test.js`) drives it with a fake socket: an incoming offer is acked, its call key decrypted, `voip_call_incoming` emitted, reject sent, and `startCall` syncs devices, encrypts per device and sends the offer. It has **not** been run through a real WhatsApp call from this fork. Worth checking on a live account: your socket and Call Kit both ack `<call>` stanzas (so an offer gets two acks), and the media path (relay, SRTP, MLow) is the zapo code unchanged.
+**Status.** The offline suite (`test/callkit.test.js`) drives it with a fake socket: an incoming offer is acked, its call key decrypted, `voip_call_incoming` emitted, reject sent, and `startCall` syncs devices, encrypts per device and sends the offer. It has **not** been run through a real WhatsApp call from this fork. Worth checking on a live account: your socket and Call Kit both ack `<call>` stanzas (so an offer gets two acks), and the media path (relay, SRTP, MLow) is the bundled VoIP code unchanged.
 
 <a id="keluar"></a>
 ### Exit

@@ -1,4 +1,4 @@
-/** Byte helpers of the media plane, kept here because the package runs without `zapo-js`. */
+/** Byte helpers of the media plane, kept here so the package stays self-contained. */
 export declare const TEXT_ENCODER: TextEncoder;
 export declare const TEXT_DECODER: TextDecoder;
 export declare const EMPTY_BYTES: Readonly<Uint8Array<ArrayBuffer>>;

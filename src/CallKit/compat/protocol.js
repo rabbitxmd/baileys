@@ -1,4 +1,4 @@
-// Derived from zapo-js (MIT, (c) vinikjkkj): src/protocol/{jid,defaults,message}.ts
+// Licence and origin of this code: see NOTICE.md and LICENSE.* in src/CallKit.
 // Only the JID helpers and constants the VoIP code uses.
 export const WA_DEFAULTS = Object.freeze({
     HOST_DOMAIN: 's.whatsapp.net',

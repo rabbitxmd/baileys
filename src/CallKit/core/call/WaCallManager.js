@@ -351,7 +351,7 @@ export class WaCallManager extends EventEmitter {
         info.groupJid = parseGroupJidAttr(nodeInfo.innerNode) ?? undefined;
         // A lightweight group offer (a group voice chat) is followed at once by a <terminate> that ends the ring,
         // not the chat. It carries no joinable attribute, so it is treated as joinable: the ring ending is
-        // ignored and an accept in flight is kept. Observed on live offers, not taken from the zapo source.
+        // ignored and an accept in flight is kept. Observed on live offers.
         const lightweight = ['1', 'true'].includes(nodeInfo.innerNode.attrs?.lightweight);
         info.joinable = parseJoinableAttr(nodeInfo.innerNode) || (lightweight && !!info.groupJid);
         if (callKey) {

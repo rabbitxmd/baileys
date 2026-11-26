@@ -1,4 +1,4 @@
-// Derived from zapo-js (MIT, (c) vinikjkkj): src/util/{bytes,primitives,coercion,collections}.ts
+// Licence and origin of this code: see NOTICE.md and LICENSE.* in src/CallKit.
 // Only the helpers the VoIP code uses.
 import { timingSafeEqual } from 'node:crypto';
 export const TEXT_ENCODER = new TextEncoder();

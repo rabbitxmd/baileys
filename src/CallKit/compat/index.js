@@ -1,5 +1,5 @@
-// Stand-in for the slice of `zapo-js` the VoIP core imports, so the code copied from
-// @zapo-js/voip (MIT, (c) vinikjkkj) runs on top of any host that implements `WaVoipDeps`.
+// Stand-in for the helpers the VoIP core imports, so the call code runs on top of any host that
+// implements `WaVoipDeps`. Licence and origin: see NOTICE.md and LICENSE.* in src/CallKit.
 import { randomBytes } from 'node:crypto';
 function noop() { }
 export function createNoopLogger(level = 'error') {

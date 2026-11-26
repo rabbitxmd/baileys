@@ -20,7 +20,7 @@ export class WaVoipCoordinator {
     };
     constructor(ctx, options = {}) {
         this.deps = ctx.deps;
-        this.logger = ctx.logger.child({ scope: '@zapo-js/voip' }, { level: options.logLevel });
+        this.logger = ctx.logger.child({ scope: 'voip' }, { level: options.logLevel });
         this.manager = new WaCallManager({
             deps: ctx.deps,
             stores: ctx.stores,
