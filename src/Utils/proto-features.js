@@ -62,13 +62,17 @@ export const buildPaymentDetails = ({ serviceType, amount, currency, payeeName, 
     })
 }
 
-export const buildVpcRequest = ({ requestId, payloadSchemaVersion = 1, scopeHint } = {}) => {
-    if (requestId === undefined || requestId === null || requestId === '') {
-        throw new TypeError('vpcRequest needs a requestId')
+export const buildVpcRequest = ({ requestId, token, payloadSchemaVersion = 1, scopeHint } = {}) => {
+    const hasId = requestId !== undefined && requestId !== null && requestId !== ''
+    const hasToken = token !== undefined && token !== null && token.length !== 0
+    if (!hasId && !hasToken) {
+        throw new TypeError('vpcRequest needs a requestId or a token')
     }
     return drop({
         payloadSchemaVersion,
-        requestId: String(requestId),
+        // newer WhatsApp builds replaced requestId with token; both are kept so either works
+        requestId: hasId ? String(requestId) : undefined,
+        token: hasToken ? (typeof token === 'string' ? Buffer.from(token, 'base64') : token) : undefined,
         scopeHint: resolveEnum(VpcScopeHint, scopeHint, 'vpcRequest.scopeHint', undefined)
     })
 }

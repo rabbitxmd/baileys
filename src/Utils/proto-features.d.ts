@@ -20,7 +20,10 @@ export declare function buildPaymentDetails(options?: {
 }): proto.Message.IPaymentDetailsMessage;
 
 export declare function buildVpcRequest(options: {
-    requestId: string | number;
+    /** Older WhatsApp builds; send this or `token` (or both). */
+    requestId?: string | number;
+    /** Newer builds; bytes, or a base64 string. */
+    token?: Uint8Array | string;
     payloadSchemaVersion?: number;
     scopeHint?: keyof typeof VpcScopeHint | number;
 }): proto.Message.IVpcRequestMessage;

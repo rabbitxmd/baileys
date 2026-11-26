@@ -25,7 +25,11 @@ test('vpcRequest accepts enum names or numbers and rejects bad input', () => {
     assert.equal(buildVpcRequest({ requestId: 1, scopeHint: 4 }).scopeHint, 4);
     assert.equal(buildVpcRequest({ requestId: 'r1' }).payloadSchemaVersion, 1);
     assert.equal('scopeHint' in buildVpcRequest({ requestId: 'r1' }), false);
-    assert.throws(() => buildVpcRequest({}), /requestId/);
+    assert.throws(() => buildVpcRequest({}), /requestId or a token/);
+    const withToken = buildVpcRequest({ token: new Uint8Array([1, 2]) });
+    assert.deepEqual([...withToken.token], [1, 2]);
+    assert.equal('requestId' in withToken, false);
+    assert.deepEqual([...buildVpcRequest({ token: 'AQI=' }).token], [1, 2]);
     assert.throws(() => buildVpcRequest({ requestId: 'r', scopeHint: 'nope' }), /unknown value/);
     assert.throws(() => buildVpcRequest({ requestId: 'r', scopeHint: 99 }), /unknown value/);
 });
