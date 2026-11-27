@@ -1,5 +1,7 @@
 # Calls (VoIP) with RabbitXmd Baileys
 
+> **Made by Rabbit Xmd · Mr Rabbit.** Don't claim this code. Do not remove this credit.
+
 Voice, video and group calls on a Baileys socket: place calls, answer or reject them, play audio into a
 call, hear the other side, join and leave group calls, react, raise a hand, mute, switch to video and
 share the screen.
@@ -262,20 +264,89 @@ yet; video arrives without it.
 
 ## Screen share
 
+A share is video: you encode what you want to show as H.264 and feed it into the call. Nothing captures
+a screen for you, so the example below shows an image or a video file (a screenshot, a slideshow, a
+recording). To share a live desktop, feed `feedLiveVideo` from your own capture source in the same way.
+
 ```js
 calls.events.on('voip_call_screen_share', ({ participantJid, share }) => {
   console.log(participantJid, share.state, share.screenWidth, share.screenHeight)
 })
-
-await calls.voip.setScreenShare(callId, true)
-calls.voip.feedLiveVideo(callId, screenAccessUnit, timestampUs)    // what you feed is what they see
-await calls.voip.setScreenShare(callId, false)
 ```
 
-A share is not a second stream: the screen replaces the camera on the call's video stream, so stop
-feeding the camera while sharing. The call must already carry video, otherwise it throws (upgrade first).
-WhatsApp's desktop clients refuse to show a share in a group call; mobile ones accept it, which has not
-been confirmed against a live call.
+Steps, in order:
+
+1. The call must already carry video. Place it with `isVideo: true` (or `.vcall` in the bot), or turn a
+   voice call into video first ([Video](#video)). Otherwise `setScreenShare(callId, true)` throws.
+2. `await calls.voip.setScreenShare(callId, true)` announces the share.
+3. Feed H.264 access units with `feedLiveVideo(callId, au, timestampUs)`. What you feed is what they see.
+4. `await calls.voip.setScreenShare(callId, false)` when done. Stop feeding the camera while sharing:
+   the screen replaces it on the same video stream.
+
+**Helper: turn an image or video into access units** (needs `ffmpeg` with libx264 on the PATH):
+
+```js
+import { spawn } from 'node:child_process'
+import { setTimeout as sleep } from 'node:timers/promises'
+
+async function* h264AccessUnits(input, { fps = 10, width = 640, height = 360, image = false } = {}) {
+  const ff = spawn('ffmpeg', ['-v', 'error', ...(image ? ['-loop', '1'] : []), '-i', input, '-an',
+    '-vf', `scale=${width}:${height}:force_original_aspect_ratio=decrease,pad=${width}:${height}:(ow-iw)/2:(oh-ih)/2,fps=${fps},format=yuv420p`,
+    '-c:v', 'libx264', '-profile:v', 'baseline', '-preset', 'veryfast', '-tune', 'zerolatency',
+    '-x264-params', `aud=1:keyint=${fps * 2}:repeat-headers=1`, '-f', 'h264', 'pipe:1'],
+    { stdio: ['ignore', 'pipe', 'inherit'] })
+  // access-unit delimiters (NAL type 9) mark where one picture ends and the next begins
+  const isAud = (b, i) => b[i] === 0 && b[i + 1] === 0 &&
+    ((b[i + 2] === 1 && (b[i + 3] & 0x1f) === 9) || (b[i + 2] === 0 && b[i + 3] === 1 && (b[i + 4] & 0x1f) === 9))
+  const find = (b, from) => { for (let i = from; i < b.length - 4; i++) if (isAud(b, i)) return i; return -1 }
+  let buf = Buffer.alloc(0)
+  try {
+    for await (const chunk of ff.stdout) {
+      buf = Buffer.concat([buf, chunk])
+      for (let start = find(buf, 0); start !== -1; start = 0) {
+        const next = find(buf, start + 4)
+        if (next === -1) break
+        yield buf.subarray(start, next)
+        buf = buf.subarray(next)
+      }
+    }
+    if (buf.length) yield buf
+  } finally { ff.kill() }
+}
+
+/** Shares `source` into the call until it ends, `signal` aborts, or the call goes away. */
+async function shareScreen(calls, callId, source, { fps = 10, image = false, signal } = {}) {
+  await calls.voip.setScreenShare(callId, true)
+  const t0 = Date.now()
+  let frame = 0
+  try {
+    for await (const au of h264AccessUnits(source, { fps, image })) {
+      if (signal?.aborted || !calls.voip.getCall(callId)) break
+      const wait = t0 + (frame * 1000) / fps - Date.now()      // pace to real time
+      if (wait > 0) await sleep(wait)
+      calls.voip.feedLiveVideo(callId, au, Math.round((frame * 1e6) / fps))
+      frame++
+    }
+  } finally {
+    await calls.voip.setScreenShare(callId, false).catch(() => {})
+  }
+}
+
+// share a picture for as long as you like, stop it with the controller
+const stop = new AbortController()
+shareScreen(calls, callId, './slide.png', { image: true, signal: stop.signal })
+// ... later: stop.abort()
+```
+
+The helper was checked offline (ffmpeg produced one access unit per frame, with a key frame every two
+seconds), but **never inside a real WhatsApp call**.
+
+Things to know:
+- `feedLiveVideo` returns the number of RTP packets sent. `0` means video is not active yet, is waiting
+  for the other side, or is waiting for the next key frame. The first picture appears at a key frame.
+- On a call you accepted a video upgrade for, frames are held until the peer's camera is on (three
+  seconds at most).
+- WhatsApp's desktop clients refuse to show a share in a group call; mobile ones are not confirmed.
 
 ## API
 
