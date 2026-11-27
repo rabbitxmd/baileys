@@ -1,5 +1,5 @@
 // Stand-in for the helpers the VoIP core imports, so the call code runs on top of any host that
-// implements `WaVoipDeps`. Licence and origin: see NOTICE.md and LICENSE.* in src/CallKit.
+// implements `WaVoipDeps`.
 import { randomBytes } from 'node:crypto';
 function noop() { }
 export function createNoopLogger(level = 'error') {

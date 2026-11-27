@@ -1,4 +1,4 @@
-// Licence and origin of this code: see NOTICE.md and LICENSE.* in src/CallKit.
+// Part of the bundled Call Kit.
 // Only the JID helpers and constants the VoIP code uses.
 export const WA_DEFAULTS = Object.freeze({
     HOST_DOMAIN: 's.whatsapp.net',

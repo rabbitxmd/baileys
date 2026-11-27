@@ -1,4 +1,4 @@
-// Licence and origin of this code: see NOTICE.md and LICENSE.* in src/CallKit.
+// Part of the bundled Call Kit.
 // Only the node helpers and the `custom` ack / receipt builders the VoIP code uses.
 import { TEXT_DECODER } from './util.js';
 const EMPTY_NODE_CHILDREN = Object.freeze([]);

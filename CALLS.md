@@ -7,7 +7,7 @@ call, hear the other side, join and leave group calls, react, raise a hand, mute
 share the screen.
 
 This is the bundled **Call Kit** (`src/CallKit/`): the `baileys-call-kit` adapter on top of a bundled VoIP
-stack (MIT, see `src/CallKit/NOTICE.md`); this page is the Baileys guide to it.
+stack; this page is the Baileys guide to it.
 
 > **Not yet run against a real WhatsApp call.** The socket seam is covered by an offline test
 > (`test/callkit.test.js`), but audio, video, group calls and every in-call feature still need a live
@@ -451,4 +451,4 @@ advanced; see `src/CallKit/core/WaVoipCoordinator.d.ts`.
 
 ## Credits
 
-The call code is MIT licensed; see `src/CallKit/NOTICE.md` and the licence files next to it.
+Made by Rabbit Xmd · Mr Rabbit.

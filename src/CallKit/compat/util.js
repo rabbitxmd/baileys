@@ -1,4 +1,4 @@
-// Licence and origin of this code: see NOTICE.md and LICENSE.* in src/CallKit.
+// Part of the bundled Call Kit.
 // Only the helpers the VoIP code uses.
 import { timingSafeEqual } from 'node:crypto';
 export const TEXT_ENCODER = new TextEncoder();
