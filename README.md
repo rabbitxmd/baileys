@@ -5104,37 +5104,98 @@ Those three files belong to WhatsApp Web itself, carried byte for byte. A supply
 Nothing is written to stdout unless you ask: pass `debug: true` for its built-in tracing, or `logger: (...args) => …` to direct it to your own logger.
 
 <a id="call-kit-incoming-calls-and-live-audio"></a>
-### Call Kit: incoming calls and live audio
+### 📞 Calls: Call Kit
 
-`makeVoipClient` above places calls and plays files. **Call Kit** is the other half: it answers and rejects incoming calls, hands you the caller's audio, lets you speak into a call live, and runs group calls with their roster, rekeying and video subscriptions. It is the `baileys-call-kit` adapter on top of a bundled VoIP stack, shipped in `src/CallKit/` together with its media layer, so installing Baileys is enough (full guide with every feature: [CALLS.md](./CALLS.md)): `@roamhq/wrtc`, `libmlow-wasm-fork` and `ffmpeg-static` come along as optional dependencies (npm skips any that cannot build on your platform, and a system `ffmpeg` is used first when there is one).
+> **Made by Rabbit Xmd · Mr Rabbit.** Don't claim this code.
+
+Call Kit lets your bot **place calls, answer them, play music into a call, hear the caller, run group calls, join a call in progress, react, raise a hand, mute, switch to video and share a screen**. It ships inside this package (`src/CallKit/`), so installing Baileys is enough: `@roamhq/wrtc`, `libmlow-wasm-fork` and `ffmpeg-static` come along as optional dependencies (npm skips any that cannot build on your platform, and a system `ffmpeg` is used first). The full guide with every method and event is [CALLS.md](./CALLS.md).
+
+> Not yet run through a real WhatsApp call from this fork. Try it between two of your own numbers first.
+
+#### Start
 
 ```js
-import makeWASocket, { attachCalls } from '@whiskeysockets/baileys'
+import makeWASocket, { attachCalls, loadCallKit } from '@whiskeysockets/baileys'
 
 const sock = makeWASocket({ /* ... */ })
-const calls = await attachCalls(sock, { logger })
-
-calls.events.on('voip_call_incoming', async (call) => {
-    await calls.voip.acceptCall(call.callId)          // or rejectCall(call.callId)
-})
-calls.events.on('voip_call_inbound_audio', ({ call, pcm }) => {
-    // pcm is a Float32Array of 16 kHz mono audio
-})
-calls.events.on('voip_call_ended', (call) => console.log('ended', call.callId))
-
-const callId = await calls.voip.startCall({ peerJid: '918123456789@s.whatsapp.net' })
-calls.voip.feedLiveAudio(callId, float32Pcm16k)       // speak into the call
-await calls.voip.endCall(callId)
+const calls = await attachCalls(sock)               // { voip, events, detach }
+const { EndCallReason } = await loadCallKit()       // enums live here
 ```
 
-- `calls.voip` is the coordinator (`startCall`, `acceptCall`, `rejectCall`, `endCall`, `setMute`, `loadAudio`, `feedLiveAudio`, `getCall`, `getCalls`, video and group-call methods). `calls.events` carries the `voip_*` events.
-- Group calls: `startCall({ groupJid, participants: [{ jid }] })`. Several calls at once need `attachCalls(sock, { maxConcurrentCalls: 2 })`.
-- Reconnecting creates a new socket: call `attachCalls` again with it, and `detach()` the old one.
-- `attachCalls` loads the call stack on first use. To get its enums (`CallState`, `EndCallReason`, ...) use `const { EndCallReason } = await loadCallKit()`; to import it synchronously, import `src/CallKit/index.js` yourself.
-- Decoding a recorded file for `loadAudio` needs `ffmpeg` on the `PATH`.
-- Use either `makeVoipClient` or `attachCalls` on a given socket, not both: each registers its own handlers for the same call stanzas.
+`calls.voip` is the call API, `calls.events` carries the `voip_*` events. Attach once per socket: after a reconnect creates a new socket, call `calls.voip.dispose()` and `calls.detach()` on the old one, then `attachCalls` on the new one.
 
-**Status.** The offline suite (`test/callkit.test.js`) drives it with a fake socket: an incoming offer is acked, its call key decrypted, `voip_call_incoming` emitted, reject sent, and `startCall` syncs devices, encrypts per device and sends the offer. It has **not** been run through a real WhatsApp call from this fork. Worth checking on a live account: your socket and Call Kit both ack `<call>` stanzas (so an offer gets two acks), and the media path (relay, SRTP, MLow) is the bundled VoIP code unchanged.
+#### Place a call
+
+```js
+const callId = await calls.voip.startCall({ peerJid: '919812345678@s.whatsapp.net' })    // voice
+await calls.voip.startCall({ peerJid: '919812345678@s.whatsapp.net', isVideo: true })    // video
+await calls.voip.endCall(callId)                                                         // hang up
+```
+
+#### Answer or reject
+
+```js
+calls.events.on('voip_call_incoming', async (call) => {
+    console.log('ringing from', call.callerPn || call.peerJid, call.callId)
+    await calls.voip.acceptCall(call.callId)                          // answer
+    // await calls.voip.rejectCall(call.callId, EndCallReason.Declined)   // or decline
+})
+```
+
+#### Play music or speak into a call
+
+```js
+await calls.voip.loadAudio(callId, './song.mp3')                                  // a file (needs ffmpeg)
+calls.events.on('voip_call_outbound_audio_finished', (c) => calls.voip.endCall(c.callId))
+
+calls.voip.setExternalAudioMode(callId, true)                                     // live audio
+calls.voip.feedLiveAudio(callId, float32Pcm16kMono)
+
+calls.events.on('voip_call_inbound_audio', ({ call, pcm }) => { /* the other side, Float32Array */ })
+```
+
+#### Group calls and joining
+
+```js
+// ring a group (participants must be LIDs, leave yourself out)
+await calls.voip.startCall({ groupJid, participants: [{ jid: '123456789@lid' }] })
+
+await calls.voip.leaveCall(callId)       // step out, the call goes on for the others
+await calls.voip.joinCall(callId)        // join a group call you declined, missed or left
+```
+
+`joinCall` only works for a group call whose ring reached your account. If the call is still ringing, use `acceptCall`. Voice chats arrive as incoming group offers: answering them with `acceptCall` as soon as they ring is the way in.
+
+#### React, raise a hand, mute
+
+```js
+calls.voip.sendReaction(callId, '❤️')            // emoji reaction on a live call
+await calls.voip.setHandRaised(callId, true)     // raise (false to lower)
+calls.voip.setMute(callId, true)                 // mute yourself (false to unmute)
+await calls.voip.requestParticipantMute(callId, participantJid)   // ask someone to mute (group calls)
+
+calls.events.on('voip_call_reaction',   ({ participantJid, reaction }) => console.log(participantJid, reaction.reaction))
+calls.events.on('voip_call_hand_raise', ({ participantJid, raised }) => { /* ... */ })
+calls.events.on('voip_call_peer_mute',  ({ participantJid, muted }) => { /* ... */ })
+```
+
+#### Video and screen share
+
+```js
+const result = await calls.voip.requestVideoUpgrade(callId)     // turn a voice call into video
+await calls.voip.setScreenShare(callId, true)                   // call must carry video
+calls.voip.feedLiveVideo(callId, h264AccessUnit, timestampUs)   // what you feed is what they see
+await calls.voip.setScreenShare(callId, false)
+```
+
+Video is **H.264** in both directions and nothing captures a screen for you. [CALLS.md](./CALLS.md#screen-share) has a ready ffmpeg helper that shares an image or a video file, with the steps and limits.
+
+#### Good to know
+
+- Group calls ring accounts by LID; `p.lid` from `groupMetadata` or `sock.signalRepository.lidMapping.getLIDForPN(pn)` gives it.
+- Several calls at once need `attachCalls(sock, { maxConcurrentCalls: 2 })`; the default is one.
+- Use either `makeVoipClient` or `attachCalls` on a given socket, not both.
+- Your socket and Call Kit both ack `<call>` stanzas, so an offer gets two acks. Not known to hurt, unconfirmed on a live account.
 
 <a id="keluar"></a>
 ### Exit
